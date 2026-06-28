@@ -30,9 +30,10 @@ const PUBLIC_PATHS = ["/login", "/shared-document"];
 function AuthProviders({ children }: { children: React.ReactNode }) {
   const { pathname } = useLocation();
   const isPublic = PUBLIC_PATHS.some(p => pathname.startsWith(p));
-  const hasToken = !!localStorage.getItem("token");
 
-  if (isPublic || !hasToken) {
+  // Hanya skip provider di halaman publik seperti login & shared-document.
+  // Jangan skip berdasarkan token, biar API service (yang meredirect 401) yang meng-handle jika belum login.
+  if (isPublic) {
     return <>{children}</>;
   }
 
