@@ -176,8 +176,8 @@ export function AppSidebar() {
                   <NavLink to={to} end={end} className="block w-full">
                     {({ isActive }) => (
                       <SidebarMenuButton isActive={isActive} tooltip={label}>
-                        <Icon className="h-4 w-4 shrink-0" />
-                        <span className="text-base leading-none">{label}</span>
+                        <Icon className="h-5 w-5 shrink-0" />
+                        <span className="text-lg leading-none">{label}</span>
                       </SidebarMenuButton>
                     )}
                   </NavLink>
@@ -189,8 +189,8 @@ export function AppSidebar() {
                   <NavLink to="/settings" className="block w-full">
                     {({ isActive }) => (
                       <SidebarMenuButton isActive={isActive} tooltip="Manajemen Tim">
-                        <Shield className="h-4 w-4 shrink-0" />
-                        <span className="text-base leading-none">Manajemen Tim</span>
+                        <Shield className="h-5 w-5 shrink-0" />
+                        <span className="text-lg leading-none">Manajemen Tim</span>
                       </SidebarMenuButton>
                     )}
                   </NavLink>
