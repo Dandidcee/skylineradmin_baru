@@ -14,7 +14,7 @@ export const authenticateToken = (req: AuthRequest, res: Response, next: NextFun
   if (token == null) return res.status(401).json({ error: 'Token missing' });
 
   jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ error: 'Invalid token' });
+    if (err) return res.status(401).json({ error: 'Invalid token' });
     req.user = user;
     next();
   });
