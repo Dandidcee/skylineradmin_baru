@@ -50,26 +50,40 @@ function AuthProviders({ children }: { children: React.ReactNode }) {
   );
 }
 
+import { Navigate } from "react-router-dom";
+
+// Komponen pelindung rute pribadi (mencegah flash dashboard sebelum redirect API)
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const hasToken = !!localStorage.getItem("token");
+  if (!hasToken) {
+    return <Navigate to="/login" replace />;
+  }
+  return <>{children}</>;
+}
+
 // Root Application Component
 export default function App() {
   return (
     <ThemeProvider>
       <AuthProviders>
         <Routes>
-          <Route path="/"                    element={<DashboardPage />} />
-          <Route path="/documents"           element={<DocumentsPage />} />
-          <Route path="/templates"           element={<TemplatesPage />} />
-          <Route path="/clients"             element={<ClientsPage />} />
-          <Route path="/projects"            element={<ProjectsPage />} />
-          <Route path="/solo-projects"       element={<SoloProjectsPage />} />
-          <Route path="/payment"             element={<PaymentPage />} />
-          <Route path="/maintenance"         element={<MaintenancePage />} />
-          <Route path="/calendar"            element={<CalendarPage />} />
-          <Route path="/activities"          element={<TodoPage />} />
-          <Route path="/revisions"           element={<RevisionsPage />} />
-          <Route path="/settings"            element={<SettingsPage />} />
+          {/* Public Routes */}
           <Route path="/login"               element={<LoginPage />} />
           <Route path="/shared-document/:id" element={<SharedDocumentPage />} />
+
+          {/* Protected Routes */}
+          <Route path="/"                    element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+          <Route path="/documents"           element={<ProtectedRoute><DocumentsPage /></ProtectedRoute>} />
+          <Route path="/templates"           element={<ProtectedRoute><TemplatesPage /></ProtectedRoute>} />
+          <Route path="/clients"             element={<ProtectedRoute><ClientsPage /></ProtectedRoute>} />
+          <Route path="/projects"            element={<ProtectedRoute><ProjectsPage /></ProtectedRoute>} />
+          <Route path="/solo-projects"       element={<ProtectedRoute><SoloProjectsPage /></ProtectedRoute>} />
+          <Route path="/payment"             element={<ProtectedRoute><PaymentPage /></ProtectedRoute>} />
+          <Route path="/maintenance"         element={<ProtectedRoute><MaintenancePage /></ProtectedRoute>} />
+          <Route path="/calendar"            element={<ProtectedRoute><CalendarPage /></ProtectedRoute>} />
+          <Route path="/activities"          element={<ProtectedRoute><TodoPage /></ProtectedRoute>} />
+          <Route path="/revisions"           element={<ProtectedRoute><RevisionsPage /></ProtectedRoute>} />
+          <Route path="/settings"            element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
         </Routes>
         <Toaster 
           position="top-center" 
