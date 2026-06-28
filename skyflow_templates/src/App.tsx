@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/store/theme-store";
 import { DocumentProvider } from "@/store/document-store";
@@ -35,51 +35,75 @@ function PageLoader() {
   );
 }
 
+// Halaman publik (login & shared document) tidak butuh data store
+const PUBLIC_PATHS = ["/login", "/shared-document"];
+
+/**
+ * Provider wrapper yang hanya aktif saat user sudah login.
+ * Ini mencegah 4 API call sia-sia saat halaman login / shared-document dibuka.
+ */
+function AuthProviders({ children }: { children: React.ReactNode }) {
+  const { pathname } = useLocation();
+  const isPublic = PUBLIC_PATHS.some(p => pathname.startsWith(p));
+  const hasToken = !!localStorage.getItem("token");
+
+  // Halaman publik atau belum ada token → jangan wrap dengan data providers
+  if (isPublic || !hasToken) {
+    return <>{children}</>;
+  }
+
+  return (
+    <DocumentProvider>
+      <ClientProvider>
+        <CalendarProvider>
+          <TodoProvider>
+            {children}
+          </TodoProvider>
+        </CalendarProvider>
+      </ClientProvider>
+    </DocumentProvider>
+  );
+}
+
 // Root Application Component
 export default function App() {
   return (
     <ThemeProvider>
-      <DocumentProvider>
-        <ClientProvider>
-          <CalendarProvider>
-            <TodoProvider>
-              <Suspense fallback={<PageLoader />}>
-                <Routes>
-                  <Route path="/"                      element={<DashboardPage />} />
-                  <Route path="/documents"             element={<DocumentsPage />} />
-                  <Route path="/templates"             element={<TemplatesPage />} />
-                  <Route path="/clients"               element={<ClientsPage />} />
-                  <Route path="/projects"              element={<ProjectsPage />} />
-                  <Route path="/solo-projects"         element={<SoloProjectsPage />} />
-                  <Route path="/payment"               element={<PaymentPage />} />
-                  <Route path="/maintenance"           element={<MaintenancePage />} />
-                  <Route path="/calendar"              element={<CalendarPage />} />
-                  <Route path="/activities"            element={<TodoPage />} />
-                  <Route path="/revisions"             element={<RevisionsPage />} />
-                  <Route path="/settings"              element={<SettingsPage />} />
-                  <Route path="/login"                 element={<LoginPage />} />
-                  <Route path="/shared-document/:id"   element={<SharedDocumentPage />} />
-                </Routes>
-              </Suspense>
-              <Toaster 
-                position="top-center" 
-                expand={true} 
-                toastOptions={{
-                  classNames: {
-                    toast: 'font-sans rounded-lg border shadow-lg p-4 flex items-start gap-3',
-                    title: 'text-sm font-semibold text-gray-900',
-                    description: 'text-xs text-gray-500',
-                    success: 'border-green-200 bg-green-50 text-green-900',
-                    error: 'border-red-200 bg-red-50 text-red-900',
-                    warning: 'border-amber-200 bg-amber-50 text-amber-900',
-                    info: 'border-blue-200 bg-blue-50 text-blue-900',
-                  }
-                }}
-              />
-            </TodoProvider>
-          </CalendarProvider>
-        </ClientProvider>
-      </DocumentProvider>
+      <AuthProviders>
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            <Route path="/"                      element={<DashboardPage />} />
+            <Route path="/documents"             element={<DocumentsPage />} />
+            <Route path="/templates"             element={<TemplatesPage />} />
+            <Route path="/clients"               element={<ClientsPage />} />
+            <Route path="/projects"              element={<ProjectsPage />} />
+            <Route path="/solo-projects"         element={<SoloProjectsPage />} />
+            <Route path="/payment"               element={<PaymentPage />} />
+            <Route path="/maintenance"           element={<MaintenancePage />} />
+            <Route path="/calendar"              element={<CalendarPage />} />
+            <Route path="/activities"            element={<TodoPage />} />
+            <Route path="/revisions"             element={<RevisionsPage />} />
+            <Route path="/settings"              element={<SettingsPage />} />
+            <Route path="/login"                 element={<LoginPage />} />
+            <Route path="/shared-document/:id"   element={<SharedDocumentPage />} />
+          </Routes>
+        </Suspense>
+        <Toaster 
+          position="top-center" 
+          expand={true} 
+          toastOptions={{
+            classNames: {
+              toast: 'font-sans rounded-lg border shadow-lg p-4 flex items-start gap-3',
+              title: 'text-sm font-semibold text-gray-900',
+              description: 'text-xs text-gray-500',
+              success: 'border-green-200 bg-green-50 text-green-900',
+              error: 'border-red-200 bg-red-50 text-red-900',
+              warning: 'border-amber-200 bg-amber-50 text-amber-900',
+              info: 'border-blue-200 bg-blue-50 text-blue-900',
+            }
+          }}
+        />
+      </AuthProviders>
     </ThemeProvider>
   );
 }
