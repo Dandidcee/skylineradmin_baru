@@ -5,6 +5,7 @@ import { createFinance } from "@/services/finance-service";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Wallet, DollarSign, TrendingDown, Users, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const parseMoney = (str?: string) => {
   if (!str) return 0;
@@ -138,13 +139,12 @@ export function PaymentPage() {
         notes: paymentType === "maintenance" ? 'Pembayaran Maintenance Manual via Dashboard' : 'Pembayaran Proyek Manual via Dashboard'
       });
       
-      await loadData();
       setPaymentAmount("");
-      setSuccessMsg(`Pembayaran sebesar ${formatRupiah(amount)} berhasil dicatat untuk proyek ${selectedProject.name}!`);
-      setTimeout(() => setSuccessMsg(""), 5000);
-    } catch (error) {
-      console.error(error);
-      alert("Gagal mencatat pembayaran");
+      toast.success("Pembayaran berhasil dicatat");
+      loadData();
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || "Gagal mencatat pembayaran");
     } finally {
       setIsSubmitting(false);
     }

@@ -3,6 +3,7 @@ import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { getSoloProjects, createSoloProject, updateSoloProject, deleteSoloProject, type SoloProject } from "@/services/solo-project-service";
 import { Briefcase, Calendar, User, Plus, Wallet, AlertCircle, MoreVertical, Pencil, Trash2, CheckCircle2 } from "lucide-react";
+import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
@@ -94,16 +95,18 @@ export function SoloProjectsPage() {
 
       if (editingProject) {
         await updateSoloProject(editingProject.id, payload);
+        toast.success("Project berhasil diperbarui.");
       } else {
         await createSoloProject(payload);
+        toast.success("Project berhasil dibuat.");
       }
       setIsModalOpen(false);
       setEditingProject(null);
       setFormData({ bossName: "", projectName: "", paymentAmount: "", debtAmount: "", progress: "0" });
       loadProjects();
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert("Gagal menyimpan project.");
+      toast.error(err.message || "Gagal menyimpan project.");
     } finally {
       setIsSubmitting(false);
     }
@@ -113,8 +116,9 @@ export function SoloProjectsPage() {
     try {
       await updateSoloProject(proj.id, { debtAmount: 0 });
       loadProjects();
-    } catch (err) {
-      alert("Gagal menandai lunas.");
+      toast.success("Project berhasil ditandai lunas.");
+    } catch (err: any) {
+      toast.error(err.message || "Gagal menandai lunas.");
     }
   };
 
@@ -122,8 +126,9 @@ export function SoloProjectsPage() {
     try {
       await deleteSoloProject(id);
       loadProjects();
-    } catch (err) {
-      alert("Gagal menghapus project.");
+      toast.success("Project berhasil dihapus.");
+    } catch (err: any) {
+      toast.error(err.message || "Gagal menghapus project.");
     }
   };
 

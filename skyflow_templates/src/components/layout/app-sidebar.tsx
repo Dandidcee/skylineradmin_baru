@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { fetchApi } from "@/services/api";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -96,32 +98,24 @@ export function AppSidebar() {
     if (!user) return;
     setIsSaving(true);
     try {
-      const token = localStorage.getItem('token');
-      const res = await fetch('/api/users/profile', {
+      const updatedUser = await fetchApi('/users/profile', {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
         body: JSON.stringify({
           name: editName,
           password: editPassword || undefined,
           photoUrl: editPhotoUrl || undefined
         })
       });
-      if (res.ok) {
-        const updatedUser = await res.json();
-        const mergedUser = { ...user, ...updatedUser };
-        setUser(mergedUser);
-        localStorage.setItem('user', JSON.stringify(mergedUser));
-        setIsProfileOpen(false);
-        setEditPassword("");
-      } else {
-        alert("Gagal mengupdate profil.");
-      }
-    } catch (err) {
+      
+      const mergedUser = { ...user, ...updatedUser };
+      setUser(mergedUser);
+      localStorage.setItem('user', JSON.stringify(mergedUser));
+      setIsProfileOpen(false);
+      setEditPassword("");
+      toast.success("Profil berhasil diperbarui");
+    } catch (err: any) {
       console.error(err);
-      alert("Terjadi kesalahan.");
+      toast.error(err.message || "Gagal mengupdate profil.");
     } finally {
       setIsSaving(false);
     }

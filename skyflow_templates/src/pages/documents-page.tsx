@@ -20,6 +20,14 @@ import { StatusBadge } from "@/components/documents/status-badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -29,8 +37,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogClose,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogPopup,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useDocuments } from "@/store/document-store";
-import { deleteDocument } from "@/services/document-service";
+import { deleteDocument, updateDocument } from "@/services/document-service";
 import type { DocumentStatus, DocumentItem } from "@/services/types";
 
 type StatusFilter = DocumentStatus | "all";
@@ -56,6 +73,9 @@ export function DocumentsPage() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [viewMode, setViewMode] = useState<"folder" | "list">("folder");
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
+  const [documentToDelete, setDocumentToDelete] = useState<DocumentItem | null>(null);
+  const [documentToEdit, setDocumentToEdit] = useState<DocumentItem | null>(null);
+  const [editTitle, setEditTitle] = useState("");
 
   const groupedDocuments = useMemo(() => {
     const groups: Record<string, { clientName: string; documents: any[] }> = {};
@@ -126,15 +146,31 @@ export function DocumentsPage() {
     doCopy();
   };
 
-  const handleDelete = async (doc: DocumentItem) => {
-    if (!confirm(`Hapus dokumen "${doc.title}"?`)) return;
+  const handleDelete = async () => {
+    if (!documentToDelete) return;
     
     try {
-      await deleteDocument(doc.id);
+      await deleteDocument(documentToDelete.id);
       toast.success("Dokumen berhasil dihapus");
       refresh();
     } catch (err: any) {
       toast.error(err.message || "Gagal menghapus dokumen");
+    } finally {
+      setDocumentToDelete(null);
+    }
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!documentToEdit || !editTitle.trim()) return;
+    
+    try {
+      await updateDocument(documentToEdit.id, { title: editTitle });
+      toast.success("Dokumen berhasil diperbarui");
+      refresh();
+      setDocumentToEdit(null);
+    } catch (err: any) {
+      toast.error(err.message || "Gagal memperbarui dokumen");
     }
   };
 
@@ -343,7 +379,10 @@ export function DocumentsPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => {
+                          setDocumentToEdit(doc);
+                          setEditTitle(doc.title);
+                        }}>
                           <Pencil className="h-4 w-4 mr-2" />
                           Ubah
                         </DropdownMenuItem>
@@ -356,7 +395,7 @@ export function DocumentsPage() {
                           Unduh
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => handleDelete(doc)} className="text-red-600 focus:text-red-600 focus:bg-red-50">
+                        <DropdownMenuItem onClick={() => setDocumentToDelete(doc)} className="text-red-600 focus:text-red-600 focus:bg-red-50">
                           <Trash2 className="h-4 w-4 mr-2" />
                           Hapus
                         </DropdownMenuItem>
@@ -375,6 +414,56 @@ export function DocumentsPage() {
           </div>
         )}
       </div>
+      <AlertDialog open={!!documentToDelete} onOpenChange={(open) => !open && setDocumentToDelete(null)}>
+        <AlertDialogPopup>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Hapus Dokumen?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Yakin ingin menghapus dokumen "{documentToDelete?.title}"? Dokumen ini akan dihapus permanen.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogClose render={<Button variant="ghost" />}>Batal</AlertDialogClose>
+            <AlertDialogClose render={<Button variant="destructive" onClick={handleDelete} />}>
+              Ya, Hapus
+            </AlertDialogClose>
+          </AlertDialogFooter>
+        </AlertDialogPopup>
+      </AlertDialog>
+
+      <Dialog open={!!documentToEdit} onOpenChange={(open) => !open && setDocumentToEdit(null)}>
+        <DialogContent>
+          <form onSubmit={handleEditSubmit}>
+            <DialogHeader>
+              <DialogTitle>Ubah Dokumen</DialogTitle>
+              <DialogDescription>
+                Ubah nama dokumen ini sesuai keinginan Anda.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <label htmlFor="title" className="text-sm font-medium">Nama Dokumen</label>
+                <input
+                  id="title"
+                  className="flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50"
+                  value={editTitle}
+                  onChange={(e: any) => setEditTitle(e.target.value)}
+                  placeholder="Masukkan nama dokumen..."
+                  autoFocus
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="ghost" onClick={() => setDocumentToEdit(null)}>
+                Batal
+              </Button>
+              <Button type="submit">
+                Simpan Perubahan
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
   );
 }

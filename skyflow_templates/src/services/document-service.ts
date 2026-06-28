@@ -35,6 +35,13 @@ export async function deleteDocument(id: string): Promise<boolean> {
   }
 }
 
+export async function updateDocument(id: string, data: { title: string }): Promise<DocumentItem> {
+  return await fetchApi(`/documents/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data)
+  });
+}
+
 export async function generateDocument(input: {
   title: string;
   template: string;

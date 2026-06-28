@@ -83,6 +83,25 @@ router.post('/', async (req, res) => {
   }
 });
 
+router.put('/:id', async (req, res) => {
+  const id = req.params.id as string;
+  const { title } = req.body;
+  
+  if (!title) {
+    return res.status(400).json({ error: 'Title is required' });
+  }
+  
+  try {
+    const updated = await prisma.document.update({
+      where: { id },
+      data: { title }
+    });
+    res.json(updated);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update document' });
+  }
+});
+
 router.delete('/:id', async (req, res) => {
   const id = req.params.id as string;
   try {
