@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { Users } from "lucide-react";
 import { motion } from "framer-motion";
 import { AppLayout } from "@/components/layout/app-layout";
@@ -6,9 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ClientTable } from "@/components/clients/client-table";
 import { useClientTable } from "@/store/client-store";
 
-const ACTIVE = ["pending", "waiting_payment", "dp_done"];
-const DONE = ["payment_full_done", "done"];
-const CANCELED = ["cancel", "canceled_by_skyflow"];
+
 
 export function ClientsPage() {
   const { data, loading } = useClientTable();
