@@ -22,9 +22,15 @@ export function SharedDocumentPage() {
   // Halaman publik ini selalu mode terang (tidak ikut tema admin)
   useEffect(() => {
     const root = document.documentElement;
-    const wasDark = root.classList.contains("dark");
-    root.classList.remove("dark");
+    let wasDark = false;
+    
+    const timer = setTimeout(() => {
+      wasDark = root.classList.contains("dark");
+      root.classList.remove("dark");
+    }, 10);
+    
     return () => {
+      clearTimeout(timer);
       if (wasDark) root.classList.add("dark");
     };
   }, []);

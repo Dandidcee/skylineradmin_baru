@@ -12,10 +12,16 @@ export function LoginPage() {
   // Paksa halaman login selalu mode terang
   useEffect(() => {
     const root = document.documentElement;
-    const wasDark = root.classList.contains("dark");
-    root.classList.remove("dark");
+    let wasDark = false;
+    
+    // Gunakan setTimeout agar berjalan setelah useEffect milik ThemeProvider selesai
+    const timer = setTimeout(() => {
+      wasDark = root.classList.contains("dark");
+      root.classList.remove("dark");
+    }, 10);
+
     return () => {
-      // Kembalikan dark mode jika sebelumnya aktif saat meninggalkan halaman login
+      clearTimeout(timer);
       if (wasDark) root.classList.add("dark");
     };
   }, []);
