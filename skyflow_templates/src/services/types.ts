@@ -16,6 +16,7 @@ export type DocumentItem = {
   fileUrl?: string;
   amount?: string;
   clientSignature?: string;
+  creator?: { name: string, email: string };
 };
 
 export type DashboardStats = {
@@ -47,6 +48,7 @@ export type ClientItem = {
   notes: string; // Catatan
   company?: string; // Perusahaan
   address?: string; // Alamat
+  creator?: { name: string, email: string };
 };
 
 /* ──────────────────────────────────────────────

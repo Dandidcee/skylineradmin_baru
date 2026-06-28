@@ -268,10 +268,17 @@ export function DocumentsPage() {
                     <StatusBadge status={doc.status} />
                   </span>
 
-                  {/* Tanggal */}
-                  <span className="text-sm text-text/60 md:col-span-1">
-                    <span className="text-text/50 md:hidden">Dibuat: </span>
-                    {formatDate(doc.createdAt)}
+                  {/* Tanggal & Creator */}
+                  <span className="text-sm text-text/60 md:col-span-1 flex flex-col justify-center">
+                    <span>
+                      <span className="text-text/50 md:hidden">Dibuat: </span>
+                      {formatDate(doc.createdAt)}
+                    </span>
+                    {doc.creator && (
+                      <span className="text-[10px] text-text/40 font-medium truncate" title={`Oleh: ${doc.creator.name}`}>
+                        Oleh: {doc.creator.name}
+                      </span>
+                    )}
                   </span>
 
                   {/* Aksi */}

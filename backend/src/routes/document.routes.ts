@@ -7,7 +7,7 @@ router.use(authenticateToken);
 
 router.get('/', async (req, res) => {
   const docs = await prisma.document.findMany({ 
-    include: { client: true, project: true },
+    include: { client: true, project: true, creator: true },
     orderBy: { createdAt: 'desc' } 
   });
   res.json(docs);
@@ -18,7 +18,12 @@ router.post('/', async (req, res) => {
   
   try {
     const { amount, ...documentData } = data;
-    const doc = await prisma.document.create({ data: documentData });
+    const doc = await prisma.document.create({ 
+      data: {
+        ...documentData,
+        creatorId: (req as any).user?.id
+      } 
+    });
     
     if (data.projectId && data.template) {
       const projectId = data.projectId;

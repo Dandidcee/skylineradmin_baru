@@ -16,8 +16,10 @@ model User {
   role        String        @default("ADMIN")
   permissions String        @default("[]")
   createdAt   DateTime      @default(now())
-  tasks       Task[]        @relation("TaskAssignee")
-  messages    ChatMessage[]
+  tasks          Task[]        @relation("TaskAssignee")
+  messages       ChatMessage[]
+  createdClients Client[]      @relation("ClientCreator")
+  createdDocs    Document[]    @relation("DocumentCreator")
 }
 
 model Client {
@@ -42,6 +44,10 @@ model Client {
   // Relations
   projects          Project[]
   documents         Document[]
+  
+  // Creator tracking
+  creatorId         String?
+  creator           User?      @relation("ClientCreator", fields: [creatorId], references: [id])
 }
 
 model Project {
@@ -94,6 +100,10 @@ model Document {
   projectId String?
   project   Project? @relation(fields: [projectId], references: [id])
   clientSignature String?
+  
+  // Creator tracking
+  creatorId String?
+  creator   User?    @relation("DocumentCreator", fields: [creatorId], references: [id])
 }
 
 model Finance {

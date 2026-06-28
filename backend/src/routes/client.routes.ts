@@ -8,7 +8,7 @@ router.use(authenticateToken);
 
 router.get('/', async (req, res) => {
   const clients = await prisma.client.findMany({ 
-    include: { documents: true, projects: true },
+    include: { documents: true, projects: true, creator: true },
     orderBy: { createdAt: 'desc' } 
   });
   res.json(clients);
@@ -23,7 +23,8 @@ router.post('/', async (req, res) => {
         status: data.status || "Baru",
         request: data.request || "-",
         progress: data.progress || "0%",
-        notes: data.notes || "-"
+        notes: data.notes || "-",
+        creatorId: (req as any).user?.id
       } 
     });
     res.json(client);

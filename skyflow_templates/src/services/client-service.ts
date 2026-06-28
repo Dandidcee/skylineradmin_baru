@@ -7,6 +7,7 @@ const INITIAL_TABLE: TableData = {
     { id: "company", name: "Perusahaan", type: "text" },
     { id: "address", name: "Alamat", type: "text" },
     { id: "phone", name: "No HP", type: "text" },
+    { id: "creator", name: "Dibuat Oleh", type: "text" },
   ],
   rows: [],
 };
@@ -32,6 +33,7 @@ export async function getClientTable(): Promise<TableData> {
           company: c.company || '',
           address: c.address || '',
           phone: c.phone || '',
+          creator: c.creator ? c.creator.name : '-',
         }
       }))
     };
