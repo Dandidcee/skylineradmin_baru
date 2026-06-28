@@ -44,6 +44,7 @@ export default defineConfig({
   server: {
     port: 5081,
     host: true,
+    allowedHosts: true, // Mengizinkan domain (seperti admin.skyflow.my.id) dari Caddy reverse proxy
     proxy: {
       '/api': {
         target: 'http://127.0.0.1:5080',
