@@ -58,6 +58,7 @@ export function createDocumentSnapshot(title: string): { fileUrl: string, sizeKb
   const paper = document.querySelector('.paper');
   if (!paper) return null;
 
+  // Hanya ambil stylesheet link (bukan style tag yang mungkin berisi dark mode variables)
   let headStyles = '';
   const styleTags = document.querySelectorAll('style, link[rel="stylesheet"]');
   styleTags.forEach(tag => {
@@ -68,8 +69,6 @@ export function createDocumentSnapshot(title: string): { fileUrl: string, sizeKb
   const noPrints = clone.querySelectorAll('.no-print');
   noPrints.forEach(el => el.remove());
 
-  // Convert inputs/textareas inside clone to static text if needed, 
-  // but most inputs are contentEditable which works fine as static HTML.
   const htmlContent = `
     <!DOCTYPE html>
     <html>
@@ -78,10 +77,34 @@ export function createDocumentSnapshot(title: string): { fileUrl: string, sizeKb
         <title>${title}</title>
         ${headStyles}
         <style>
-          body { background: #525659; margin: 0; padding: 20px; display: flex; justify-content: center; color: #100a04; font-family: system-ui, -apple-system, sans-serif; }
-          .paper { box-shadow: 0 0 15px rgba(0,0,0,0.2) !important; margin: 0 !important; border: none !important; }
+          /* Paksa selalu mode terang — override dark mode variables */
+          :root, html, body {
+            --text: #100a04 !important;
+            --background: #fefcfb !important;
+            --primary: #004aad !important;
+            --primary-foreground: #fefcfb !important;
+            --card: #ffffff !important;
+            --muted: #f4f0ec !important;
+            --border: #e7e0d8 !important;
+            color-scheme: light !important;
+          }
+          body {
+            background: #f1f5f9 !important;
+            margin: 0;
+            padding: 24px;
+            display: flex;
+            justify-content: center;
+            color: #100a04;
+            font-family: system-ui, -apple-system, sans-serif;
+          }
+          .paper {
+            box-shadow: 0 4px 24px rgba(0,0,0,0.10) !important;
+            margin: 0 !important;
+            border: none !important;
+            background: white !important;
+          }
           @media print {
-            body { padding: 0; background: white; }
+            body { padding: 0; background: white !important; }
             .paper { box-shadow: none !important; }
           }
         </style>
@@ -89,8 +112,10 @@ export function createDocumentSnapshot(title: string): { fileUrl: string, sizeKb
       <body class="skyflow-doc">
         ${clone.outerHTML}
         <script>
+          // Pastikan tidak ada dark mode class
+          document.documentElement.classList.remove('dark');
           window.onload = () => { setTimeout(() => { window.print(); }, 500); }
-        </script>
+        <\/script>
       </body>
     </html>
   `;
