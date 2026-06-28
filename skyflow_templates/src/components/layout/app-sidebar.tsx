@@ -227,7 +227,7 @@ export function AppSidebar() {
           </div>
           </DropdownMenuTrigger>
           
-          <DropdownMenuContent align="end" className="w-56 bg-surface border-border">
+          <DropdownMenuContent align="end" className="w-56 bg-card border-border">
             <DropdownMenuItem className="cursor-pointer" onClick={() => setIsProfileOpen(true)}>
               <UserCircle className="mr-2 h-4 w-4" />
               <span>Profil Saya</span>
@@ -266,17 +266,17 @@ export function AppSidebar() {
         </DropdownMenu>
 
         <Dialog open={isProfileOpen} onOpenChange={setIsProfileOpen}>
-          <DialogContent className="sm:max-w-md bg-surface border-border text-text">
+          <DialogContent className="sm:max-w-md bg-card border-border text-text shadow-xl">
             <DialogHeader>
               <DialogTitle>Profil Saya</DialogTitle>
             </DialogHeader>
             <div className="flex flex-col gap-4 py-4">
               <div className="flex flex-col items-center gap-2">
-                <Avatar className="h-20 w-20 ring-2 ring-border">
+                <Avatar className="h-20 w-20 ring-2 ring-border bg-muted">
                   <AvatarImage src={editPhotoUrl || "https://images.unsplash.com/photo-1543610892-0b1f7e6d8ac1?w=128&h=128&dpr=2&q=80"} />
                   <AvatarFallback>{editName.charAt(0)}</AvatarFallback>
                 </Avatar>
-                <label className="cursor-pointer text-sm text-brand-blue hover:underline flex items-center gap-1 mt-1">
+                <label className="cursor-pointer text-sm text-primary hover:underline flex items-center gap-1 mt-1 font-medium">
                   <ImageIcon className="h-4 w-4" />
                   Ubah Foto
                   <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
@@ -288,7 +288,7 @@ export function AppSidebar() {
                   type="text" 
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               </div>
               <div className="flex flex-col gap-2">
