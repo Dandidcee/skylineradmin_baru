@@ -238,6 +238,10 @@ export function ClientProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     void refresh();
+    const interval = setInterval(() => {
+      void refresh();
+    }, 10000); // Auto refresh every 10 seconds
+    return () => clearInterval(interval);
   }, []);
 
   return (

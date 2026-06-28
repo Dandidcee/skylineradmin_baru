@@ -15,9 +15,22 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-  const data = req.body;
-  const client = await prisma.client.create({ data });
-  res.json(client);
+  try {
+    const data = req.body;
+    const client = await prisma.client.create({ 
+      data: {
+        ...data,
+        status: data.status || "Baru",
+        request: data.request || "-",
+        progress: data.progress || "0%",
+        notes: data.notes || "-"
+      } 
+    });
+    res.json(client);
+  } catch (error) {
+    console.error("Failed to create client:", error);
+    res.status(500).json({ error: "Failed to create client" });
+  }
 });
 
 router.put('/:id', async (req, res) => {
