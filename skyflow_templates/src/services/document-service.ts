@@ -26,6 +26,15 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   }
 }
 
+export async function deleteDocument(id: string): Promise<boolean> {
+  try {
+    await fetchApi(`/documents/${id}`, { method: 'DELETE' });
+    return true;
+  } catch (error) {
+    throw error;
+  }
+}
+
 export async function generateDocument(input: {
   title: string;
   template: string;

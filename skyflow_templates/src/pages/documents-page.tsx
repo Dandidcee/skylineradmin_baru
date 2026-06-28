@@ -30,7 +30,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useDocuments } from "@/store/document-store";
-import type { DocumentStatus } from "@/services/types";
+import { deleteDocument } from "@/services/document-service";
+import type { DocumentStatus, DocumentItem } from "@/services/types";
 
 type StatusFilter = DocumentStatus | "all";
 
@@ -51,7 +52,7 @@ function formatDate(iso: string) {
 }
 
 export function DocumentsPage() {
-  const { documents, loading, error } = useDocuments();
+  const { documents, loading, error, refresh } = useDocuments();
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [viewMode, setViewMode] = useState<"folder" | "list">("folder");
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
@@ -123,6 +124,18 @@ export function DocumentsPage() {
     };
 
     doCopy();
+  };
+
+  const handleDelete = async (doc: DocumentItem) => {
+    if (!confirm(`Hapus dokumen "${doc.title}"?`)) return;
+    
+    try {
+      await deleteDocument(doc.id);
+      toast.success("Dokumen berhasil dihapus");
+      refresh();
+    } catch (err: any) {
+      toast.error(err.message || "Gagal menghapus dokumen");
+    }
   };
 
   const displayedDocuments = useMemo(() => {
@@ -343,7 +356,7 @@ export function DocumentsPage() {
                           Unduh
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-red-600 focus:text-red-600 focus:bg-red-50">
+                        <DropdownMenuItem onClick={() => handleDelete(doc)} className="text-red-600 focus:text-red-600 focus:bg-red-50">
                           <Trash2 className="h-4 w-4 mr-2" />
                           Hapus
                         </DropdownMenuItem>
