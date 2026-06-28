@@ -4,8 +4,8 @@ import { toastManager } from "@/components/ui/toast";
 import { setToken } from "@/services/api";
 
 export function LoginPage() {
-  const [email, setEmail] = useState("admin@skyflow.id");
-  const [password, setPassword] = useState("admin");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
