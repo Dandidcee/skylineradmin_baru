@@ -23,7 +23,7 @@ type ClientTableContextValue = {
   data: TableData;
   loading: boolean;
   error: string | null;
-  refresh: () => Promise<void>;
+  refresh: (isBackground?: boolean) => Promise<void>;
   // baris
   addRow: () => void;
   deleteRow: (rowId: string) => void;
@@ -69,15 +69,15 @@ export function ClientProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const refresh = async () => {
-    setLoading(true);
+  const refresh = async (isBackground = false) => {
+    if (!isBackground) setLoading(true);
     setError(null);
     try {
       setData(await getClientTable());
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Gagal memuat tabel client");
+      if (!isBackground) setError(e instanceof Error ? e.message : "Gagal memuat tabel client");
     } finally {
-      setLoading(false);
+      if (!isBackground) setLoading(false);
     }
   };
 
@@ -239,8 +239,8 @@ export function ClientProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     void refresh();
     const interval = setInterval(() => {
-      void refresh();
-    }, 10000); // Auto refresh every 10 seconds
+      void refresh(true);
+    }, 30000); // Auto refresh every 30 seconds
     return () => clearInterval(interval);
   }, []);
 

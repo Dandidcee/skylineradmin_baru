@@ -18,7 +18,7 @@ type DocumentContextValue = {
   documents: DocumentItem[];
   loading: boolean;
   error: string | null;
-  refresh: () => Promise<void>;
+  refresh: (isBackground?: boolean) => Promise<void>;
 };
 
 const DocumentContext = createContext<DocumentContextValue | null>(null);
@@ -28,24 +28,24 @@ export function DocumentProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const refresh = async () => {
-    setLoading(true);
+  const refresh = async (isBackground = false) => {
+    if (!isBackground) setLoading(true);
     setError(null);
     try {
       const data = await listDocuments();
       setDocuments(data);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Gagal memuat dokumen");
+      if (!isBackground) setError(e instanceof Error ? e.message : "Gagal memuat dokumen");
     } finally {
-      setLoading(false);
+      if (!isBackground) setLoading(false);
     }
   };
 
   useEffect(() => {
     void refresh();
     const interval = setInterval(() => {
-      void refresh();
-    }, 10000); // Auto refresh every 10 seconds
+      void refresh(true);
+    }, 30000); // Auto refresh every 30 seconds
     return () => clearInterval(interval);
   }, []);
 
