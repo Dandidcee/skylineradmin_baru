@@ -41,7 +41,12 @@ import {
   Wrench,
   Briefcase,
   UserCircle,
-  Image as ImageIcon,
+  ImageIcon,
+  Megaphone,
+  ShoppingCart,
+  FormInput,
+  Handshake,
+  TrendingUp,
 } from "lucide-react";
 import {
   Sidebar,
@@ -168,7 +173,7 @@ export function AppSidebar() {
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Menu</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-xs uppercase tracking-wider font-bold text-white/50 mb-1">N8N</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {filteredNavItems.map(({ to, label, icon: Icon, end }) => (
@@ -196,6 +201,29 @@ export function AppSidebar() {
                   </NavLink>
                 </SidebarMenuItem>
               )}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-xs uppercase tracking-wider font-bold text-white/50 mt-4 mb-1">FB Ads</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {[
+                { label: "Iklan Berjalan", icon: Megaphone },
+                { label: "Terjual", icon: ShoppingCart },
+                { label: "Form Builder", icon: FormInput },
+                { label: "Closing", icon: Handshake },
+                { label: "Profit", icon: TrendingUp },
+              ].map(({ label, icon: Icon }) => (
+                <SidebarMenuItem key={label}>
+                  <SidebarMenuButton tooltip={label} className="opacity-60 cursor-not-allowed hover:bg-transparent hover:text-white pointer-events-none">
+                    <Icon className="h-[18px] w-[18px] shrink-0" />
+                    <span className="text-base font-medium leading-none flex-1">{label}</span>
+                    <span className="text-[10px] font-bold bg-white/10 text-white/70 px-1.5 py-0.5 rounded uppercase tracking-wider ml-auto">Soon</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
