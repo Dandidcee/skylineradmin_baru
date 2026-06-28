@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { fetchApi } from "@/services/api";
 import { toast } from "sonner";
@@ -33,7 +35,6 @@ import {
   Layers,
   Users,
   CalendarDays,
-  ListTodo,
   Wallet,
   Shield,
   LogOut,
@@ -47,6 +48,7 @@ import {
   FormInput,
   Handshake,
   TrendingUp,
+  ChevronDown,
 } from "lucide-react";
 import {
   Sidebar,
@@ -72,8 +74,39 @@ const NAV_ITEMS = [
   { to: "/revisions", label: "Revisi", icon: ClipboardList, end: false },
   { to: "/maintenance", label: "Maintenance", icon: Wrench, end: false },
   { to: "/calendar", label: "Kalender", icon: CalendarDays, end: false },
-  { to: "/activities", label: "Aktivitas", icon: ListTodo, end: false },
+  { to: "/settings", label: "Pengaturan", icon: Wrench },
 ];
+
+function CollapsibleGroup({ label, defaultOpen = true, children }: { label: string, defaultOpen?: boolean, children: React.ReactNode }) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  return (
+    <SidebarGroup>
+      <div 
+        className="flex items-center justify-between cursor-pointer px-2 py-1.5 mb-1 hover:bg-white/5 rounded-md transition-colors"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <SidebarGroupLabel className="text-xs uppercase tracking-wider font-bold text-white/50 p-0 m-0">{label}</SidebarGroupLabel>
+        <ChevronDown className={cn("h-4 w-4 text-white/50 transition-transform", isOpen ? "" : "-rotate-90")} />
+      </div>
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <SidebarGroupContent>
+              {children}
+            </SidebarGroupContent>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </SidebarGroup>
+  );
+}
 
 export function AppSidebar() {
   const [user, setUser] = useState<{id?: string, name: string, email: string, role?: string, permissions?: string[], photoUrl?: string} | null>(null);
@@ -172,43 +205,38 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-xs uppercase tracking-wider font-bold text-white/50 mb-1">N8N</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {filteredNavItems.map(({ to, label, icon: Icon, end }) => (
-                <SidebarMenuItem key={to}>
-                  <NavLink to={to} end={end} className="block w-full">
-                    {({ isActive }) => (
-                      <SidebarMenuButton isActive={isActive} tooltip={label}>
-                        <Icon className="h-[18px] w-[18px] shrink-0" />
-                        <span className="text-base font-medium leading-none">{label}</span>
-                      </SidebarMenuButton>
-                    )}
-                  </NavLink>
-                </SidebarMenuItem>
-              ))}
-              
-              {isOwner && (
-                <SidebarMenuItem>
-                  <NavLink to="/settings" className="block w-full">
-                    {({ isActive }) => (
-                      <SidebarMenuButton isActive={isActive} tooltip="Manajemen Tim">
-                        <Shield className="h-[18px] w-[18px] shrink-0" />
-                        <span className="text-base font-medium leading-none">Manajemen Tim</span>
-                      </SidebarMenuButton>
-                    )}
-                  </NavLink>
-                </SidebarMenuItem>
-              )}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <CollapsibleGroup label="AI Project">
+          <SidebarMenu>
+            {filteredNavItems.map(({ to, label, icon: Icon, end }) => (
+              <SidebarMenuItem key={to}>
+                <NavLink to={to} end={end} className="block w-full">
+                  {({ isActive }) => (
+                    <SidebarMenuButton isActive={isActive} tooltip={label}>
+                      <Icon className="h-[18px] w-[18px] shrink-0" />
+                      <span className="text-base font-medium leading-none">{label}</span>
+                    </SidebarMenuButton>
+                  )}
+                </NavLink>
+              </SidebarMenuItem>
+            ))}
+            
+            {isOwner && (
+              <SidebarMenuItem>
+                <NavLink to="/settings" className="block w-full">
+                  {({ isActive }) => (
+                    <SidebarMenuButton isActive={isActive} tooltip="Manajemen Tim">
+                      <Shield className="h-[18px] w-[18px] shrink-0" />
+                      <span className="text-base font-medium leading-none">Manajemen Tim</span>
+                    </SidebarMenuButton>
+                  )}
+                </NavLink>
+              </SidebarMenuItem>
+            )}
+          </SidebarMenu>
+        </CollapsibleGroup>
 
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-xs uppercase tracking-wider font-bold text-white/50 mt-4 mb-1">FB Ads</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
+        <CollapsibleGroup label="FB Ads" defaultOpen={false}>
+          <SidebarMenu>
               {[
                 { label: "Iklan Berjalan", icon: Megaphone },
                 { label: "Terjual", icon: ShoppingCart },
@@ -225,8 +253,7 @@ export function AppSidebar() {
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        </CollapsibleGroup>
       </SidebarContent>
 
       <div className="mt-auto flex flex-col p-4 group-data-[collapsible=icon]:p-2 border-t border-white/10">
