@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { toastManager } from "@/components/ui/toast";
 import { setToken } from "@/services/api";
@@ -8,6 +8,17 @@ export function LoginPage() {
   const [password, setPassword] = useState("admin");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Paksa halaman login selalu mode terang
+  useEffect(() => {
+    const root = document.documentElement;
+    const wasDark = root.classList.contains("dark");
+    root.classList.remove("dark");
+    return () => {
+      // Kembalikan dark mode jika sebelumnya aktif saat meninggalkan halaman login
+      if (wasDark) root.classList.add("dark");
+    };
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

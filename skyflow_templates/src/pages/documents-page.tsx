@@ -90,17 +90,39 @@ export function DocumentsPage() {
 
   const handleShare = (doc: any) => {
     const shareUrl = `${window.location.origin}/shared-document/${doc.id}`;
-    if (navigator.clipboard && window.isSecureContext) {
-      navigator.clipboard.writeText(shareUrl)
-        .then(() => toast.success("Tautan publik berhasil disalin ke clipboard!"))
-        .catch(() => {
-          // Fallback jika clipboard diblokir
-          window.prompt("Salin tautan ini:", shareUrl);
+    
+    const doCopy = () => {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(shareUrl)
+          .then(() => toast.success("Tautan berhasil disalin!", { description: shareUrl }))
+          .catch(fallback);
+      } else {
+        fallback();
+      }
+    };
+
+    const fallback = () => {
+      // Buat element input sementara untuk copy
+      const input = document.createElement("input");
+      input.value = shareUrl;
+      input.style.position = "fixed";
+      input.style.opacity = "0";
+      document.body.appendChild(input);
+      input.focus();
+      input.select();
+      try {
+        document.execCommand("copy");
+        toast.success("Tautan berhasil disalin!", { description: shareUrl });
+      } catch {
+        toast.info("Tautan dokumen publik", {
+          description: shareUrl,
+          duration: 10000,
         });
-    } else {
-      // Fallback untuk HTTP (non-HTTPS) — browser blokir clipboard API
-      window.prompt("Salin tautan ini:", shareUrl);
-    }
+      }
+      document.body.removeChild(input);
+    };
+
+    doCopy();
   };
 
   const displayedDocuments = useMemo(() => {

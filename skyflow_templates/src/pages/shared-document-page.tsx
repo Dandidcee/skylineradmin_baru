@@ -18,6 +18,16 @@ export function SharedDocumentPage() {
   const [hasSignature, setHasSignature] = useState(false);
   const lastPos = useRef<{ x: number; y: number } | null>(null);
 
+  // Halaman publik ini selalu mode terang (tidak ikut tema admin)
+  useEffect(() => {
+    const root = document.documentElement;
+    const wasDark = root.classList.contains("dark");
+    root.classList.remove("dark");
+    return () => {
+      if (wasDark) root.classList.add("dark");
+    };
+  }, []);
+
   // Resize canvas to match its CSS display size (fixes coordinate mismatch)
   const resizeCanvas = () => {
     const canvas = canvasRef.current;
