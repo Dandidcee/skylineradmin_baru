@@ -90,9 +90,17 @@ export function DocumentsPage() {
 
   const handleShare = (doc: any) => {
     const shareUrl = `${window.location.origin}/shared-document/${doc.id}`;
-    navigator.clipboard.writeText(shareUrl)
-      .then(() => toast.success("Tautan publik berhasil disalin ke clipboard!"))
-      .catch(() => toast.error("Gagal menyalin tautan"));
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(shareUrl)
+        .then(() => toast.success("Tautan publik berhasil disalin ke clipboard!"))
+        .catch(() => {
+          // Fallback jika clipboard diblokir
+          window.prompt("Salin tautan ini:", shareUrl);
+        });
+    } else {
+      // Fallback untuk HTTP (non-HTTPS) — browser blokir clipboard API
+      window.prompt("Salin tautan ini:", shareUrl);
+    }
   };
 
   const displayedDocuments = useMemo(() => {
