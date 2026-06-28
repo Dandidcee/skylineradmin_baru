@@ -1,0 +1,185 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id          String        @id @default(uuid())
+  email       String        @unique
+  password    String
+  name        String
+  photoUrl    String?
+  role        String        @default("ADMIN")
+  permissions String        @default("[]")
+  createdAt   DateTime      @default(now())
+  tasks       Task[]        @relation("TaskAssignee")
+  messages    ChatMessage[]
+}
+
+model Client {
+  id                String     @id @default(uuid())
+  // Existing fields for frontend compatibility
+  name              String
+  phone             String
+  status            String
+  project_value     String?
+  dp_amount         String?
+  remaining_payment String?
+  request           String
+  progress          String
+  notes             String
+  due_date          String?
+  createdAt         DateTime   @default(now())
+  
+  // New fields for Global Directory
+  company           String?
+  address           String?
+  
+  // Relations
+  projects          Project[]
+  documents         Document[]
+}
+
+model Project {
+  id                 String     @id @default(uuid())
+  name               String
+  price              String
+  status             String     @default("Discuss") // Discuss, Waiting, On Process, 100% Done, Maintenance
+  clientId           String
+  client             Client     @relation(fields: [clientId], references: [id])
+  createdAt          DateTime   @default(now())
+  
+  // New fields for Kanban
+  progressPercentage Int        @default(0) // 0-100
+  maintenanceFee     String?    // Nominal maintenance per bulan
+  maxRevisions       Int        @default(3)
+  documents          Document[]
+  finances           Finance[]
+  tasks              Task[]
+  revisions          Revision[]
+  maintenanceCosts   MaintenanceCost[]
+}
+
+model Payment {
+  // Keeping this for backwards frontend compatibility
+  id                String   @id @default(uuid())
+  name              String
+  phone             String
+  status            String
+  project_value     String?
+  dp_amount         String?
+  remaining_payment String?
+  request           String
+  progress          String
+  notes             String
+  createdAt         DateTime @default(now())
+}
+
+model Document {
+  id        String   @id @default(uuid())
+  title     String
+  template  String   // E.g., 'Implementation Plan', 'Invoice', etc. (Acting as type)
+  status    String
+  sizeKb    Int
+  createdAt DateTime @default(now())
+
+  // New fields
+  fileUrl   String?
+  clientId  String?
+  client    Client?  @relation(fields: [clientId], references: [id])
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id])
+  clientSignature String?
+}
+
+model Finance {
+  id          String   @id @default(uuid())
+  type        String   // INVOICE, PAYMENT_RECEIPT, RECURRING
+  amount      Float
+  status      String   // PENDING, PAID, PARTIAL
+  notes       String?
+  dueDate     DateTime?
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id])
+  createdAt   DateTime @default(now())
+}
+
+model Task {
+  id          String    @id @default(uuid())
+  title       String
+  description String?
+  status      String    @default("TODO")
+  assigneeId  String?
+  assignee    User?     @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  projectId   String?
+  project     Project?  @relation(fields: [projectId], references: [id])
+  dueDate     DateTime?
+  createdAt   DateTime  @default(now())
+}
+
+model ChatMessage {
+  id        String   @id @default(uuid())
+  text      String
+  senderId  String
+  sender    User     @relation(fields: [senderId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model SoloProject {
+  id            String   @id @default(uuid())
+  bossName      String
+  projectName   String
+  paymentAmount Float
+  debtAmount    Float    @default(0)
+  progress      Int      @default(0)
+  createdAt     DateTime @default(now())
+}
+
+model CalendarEvent {
+  id        String   @id @default(uuid())
+  title     String
+  date      String
+  endDate   String?
+  startTime String?
+  endTime   String?
+  allDay    Boolean  @default(true)
+  color     String
+  notes     String?
+  createdAt DateTime @default(now())
+}
+
+model Todo {
+  id        String   @id @default(uuid())
+  day       String
+  text      String
+  done      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Revision {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  isDone      Boolean  @default(false)
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id])
+  createdAt   DateTime @default(now())
+}
+
+model MaintenanceCost {
+  id          String   @id @default(uuid())
+  name        String
+  amount      Float
+  type        String
+  notes       String?
+  status      String   @default("ACTIVE") // ACTIVE or INACTIVE
+  nextDueDate DateTime @default(now())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id])
+  createdAt   DateTime @default(now())
+}
+
