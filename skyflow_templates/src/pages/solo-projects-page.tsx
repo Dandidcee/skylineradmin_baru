@@ -19,6 +19,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogClose,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogPopup,
+  AlertDialogTitle,
+  AlertDialogTrigger as AlertDialogTriggerBtn,
+} from "@/components/ui/alert-dialog";
 
 export function SoloProjectsPage() {
   const [projects, setProjects] = useState<SoloProject[]>([]);
@@ -100,7 +110,6 @@ export function SoloProjectsPage() {
   };
 
   const handleSetLunas = async (proj: SoloProject) => {
-    if (!confirm(`Tandai lunas piutang Rp ${proj.debtAmount.toLocaleString('id-ID')} untuk project ini?`)) return;
     try {
       await updateSoloProject(proj.id, { debtAmount: 0 });
       loadProjects();
@@ -110,7 +119,6 @@ export function SoloProjectsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Yakin ingin menghapus project ini?")) return;
     try {
       await deleteSoloProject(id);
       loadProjects();
@@ -211,20 +219,56 @@ export function SoloProjectsPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         {proj.debtAmount > 0 && (
-                          <DropdownMenuItem className="text-green-600 focus:text-green-600 focus:bg-green-50" onClick={() => handleSetLunas(proj)}>
-                            <CheckCircle2 className="h-4 w-4 mr-2" />
-                            Tandai Lunas
-                          </DropdownMenuItem>
+                          <AlertDialog>
+                            <AlertDialogTriggerBtn render={
+                              <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-green-600 focus:text-green-600 focus:bg-green-50">
+                                <CheckCircle2 className="h-4 w-4 mr-2" />
+                                Tandai Lunas
+                              </DropdownMenuItem>
+                            } />
+                            <AlertDialogPopup>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Tandai Lunas?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Tandai lunas piutang Rp {proj.debtAmount.toLocaleString('id-ID')} untuk project ini?
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogClose render={<Button variant="ghost" />}>Batal</AlertDialogClose>
+                                <AlertDialogClose render={<Button onClick={() => handleSetLunas(proj)} />}>
+                                  Ya, Lunas
+                                </AlertDialogClose>
+                              </AlertDialogFooter>
+                            </AlertDialogPopup>
+                          </AlertDialog>
                         )}
                         <DropdownMenuItem onClick={() => openEdit(proj)}>
                           <Pencil className="h-4 w-4 mr-2" />
                           Ubah Data
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-red-600 focus:text-red-600 focus:bg-red-50" onClick={() => handleDelete(proj.id)}>
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Hapus
-                        </DropdownMenuItem>
+                        <AlertDialog>
+                          <AlertDialogTriggerBtn render={
+                            <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-red-600 focus:text-red-600 focus:bg-red-50">
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Hapus
+                            </DropdownMenuItem>
+                          } />
+                          <AlertDialogPopup>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Hapus Project Solo?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Yakin ingin menghapus project ini? Tindakan ini tidak dapat dibatalkan.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogClose render={<Button variant="ghost" />}>Batal</AlertDialogClose>
+                              <AlertDialogClose render={<Button variant="destructive" onClick={() => handleDelete(proj.id)} />}>
+                                Ya, Hapus
+                              </AlertDialogClose>
+                            </AlertDialogFooter>
+                          </AlertDialogPopup>
+                        </AlertDialog>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>

@@ -10,6 +10,11 @@ import {
   ListTodo,
   Moon,
   Sun,
+  Briefcase,
+  Wallet,
+  AlertCircle,
+  ShieldCheck,
+  Settings,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -57,11 +62,17 @@ export function CommandPalette() {
   const items: CmdItem[] = useMemo(
     () => [
       { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, group: "Navigasi", run: go("/") },
+      { id: "projects", label: "List Project", icon: Briefcase, group: "Navigasi", keywords: "project kerjaan proyek", run: go("/projects") },
+      { id: "solo-projects", label: "Project Solo", icon: User, group: "Navigasi", keywords: "solo dewekan", run: go("/solo-projects") },
+      { id: "payment", label: "Keuangan & Invoice", icon: Wallet, group: "Navigasi", keywords: "uang duit payment finance", run: go("/payment") },
+      { id: "clients", label: "List Client", icon: Users, group: "Navigasi", keywords: "klien customer", run: go("/clients") },
       { id: "documents", label: "Dokumen", icon: FileText, group: "Navigasi", keywords: "document file pdf", run: go("/documents") },
       { id: "templates", label: "Template", icon: Layers, group: "Navigasi", keywords: "invoice perjanjian bukti", run: go("/templates") },
-      { id: "clients", label: "List Client", icon: Users, group: "Navigasi", keywords: "klien customer", run: go("/clients") },
+      { id: "revisions", label: "List Revisi", icon: AlertCircle, group: "Navigasi", keywords: "revisi perbaikan bug", run: go("/revisions") },
+      { id: "maintenance", label: "Maintenance", icon: ShieldCheck, group: "Navigasi", keywords: "maintenance biaya langganan bulanan", run: go("/maintenance") },
       { id: "calendar", label: "Kalender", icon: CalendarDays, group: "Navigasi", keywords: "event jadwal", run: go("/calendar") },
       { id: "activities", label: "Aktivitas", icon: ListTodo, group: "Navigasi", keywords: "todo planner tugas", run: go("/activities") },
+      { id: "settings", label: "Pengaturan Akun", icon: Settings, group: "Navigasi", keywords: "setting akun profil password", run: go("/settings") },
       {
         id: "theme",
         label: theme === "dark" ? "Mode Terang" : "Mode Gelap",
