@@ -15,6 +15,7 @@ import {
   AlertCircle,
   ShieldCheck,
   Settings,
+  User,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
