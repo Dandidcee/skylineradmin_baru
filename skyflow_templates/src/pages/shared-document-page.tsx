@@ -12,6 +12,7 @@ export function SharedDocumentPage() {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [htmlContent, setHtmlContent] = useState<string>("");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -161,6 +162,7 @@ export function SharedDocumentPage() {
       const updatedDoc = await res.json();
       setDoc(updatedDoc);
       toast.success("Tanda tangan berhasil disimpan!");
+      setShowSuccessModal(true); // Tampilkan modal ucapan terima kasih
       
     } catch (error: any) {
       console.error(error);
@@ -198,7 +200,8 @@ export function SharedDocumentPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 py-8 px-4 sm:px-6 flex flex-col items-center font-sans">
+    <>
+      <div className="min-h-screen bg-slate-50 text-slate-900 py-8 px-4 sm:px-6 flex flex-col items-center font-sans">
       <div className="max-w-4xl w-full flex flex-col gap-6">
         
         {/* Header */}
@@ -239,8 +242,10 @@ export function SharedDocumentPage() {
                   srcDoc={htmlContent} 
                   title="Document Preview"
                   className="w-full h-full border-0"
-                  sandbox="allow-same-origin allow-scripts"
+                  sandbox="allow-scripts"
                 />
+                {/* Overlay transparan untuk mencegah klien mengedit konten dokumen */}
+                <div className="absolute inset-0 z-10 cursor-default select-none" />
               </div>
             ) : doc.fileUrl ? (
               <div className="w-full h-[60vh] flex items-center justify-center bg-slate-100">
@@ -327,5 +332,35 @@ export function SharedDocumentPage() {
         </Card>
       </div>
     </div>
+
+    {/* Modal Ucapan Terima Kasih setelah tanda tangan */}
+    {showSuccessModal && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+        <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-8 flex flex-col items-center text-center gap-5 animate-in zoom-in-95 duration-200">
+          {/* Icon */}
+          <div className="h-20 w-20 rounded-full bg-emerald-50 flex items-center justify-center">
+            <CheckCircle2 className="h-10 w-10 text-emerald-500" />
+          </div>
+
+          {/* Pesan */}
+          <div className="flex flex-col gap-2">
+            <h2 className="text-xl font-bold text-slate-900">Tanda Tangan Diterima!</h2>
+            <p className="text-slate-500 text-sm leading-relaxed">
+              Terimakasih telah melakukan tanda tangan.<br />
+              Tim akan segera menghubungi anda.
+            </p>
+          </div>
+
+          {/* Tombol tutup */}
+          <Button
+            className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl py-2.5"
+            onClick={() => setShowSuccessModal(false)}
+          >
+            Tutup
+          </Button>
+        </div>
+      </div>
+    )}
+    </>
   );
 }

@@ -69,6 +69,15 @@ export function createDocumentSnapshot(title: string): { fileUrl: string, sizeKb
   const noPrints = clone.querySelectorAll('.no-print');
   noPrints.forEach(el => el.remove());
 
+  // Hapus semua contenteditable agar dokumen yang di-share tidak bisa diedit
+  clone.querySelectorAll('[contenteditable]').forEach(el => {
+    el.removeAttribute('contenteditable');
+  });
+  // Hapus semua input & textarea agar tidak bisa diisi
+  clone.querySelectorAll('input, textarea').forEach(el => {
+    (el as HTMLElement).setAttribute('disabled', 'true');
+  });
+
   const htmlContent = `
     <!DOCTYPE html>
     <html>
@@ -102,6 +111,9 @@ export function createDocumentSnapshot(title: string): { fileUrl: string, sizeKb
             margin: 0 !important;
             border: none !important;
             background: white !important;
+            /* Blokir semua interaksi pengguna */
+            pointer-events: none !important;
+            user-select: none !important;
           }
           @media print {
             body { padding: 0; background: white !important; }
