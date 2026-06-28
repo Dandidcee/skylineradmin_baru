@@ -21,7 +21,7 @@ export function SharedDocumentPage() {
     if (!id) return;
     
     // Fetch directly to avoid any auth token interceptors (if they exist)
-    const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+    const baseUrl = "/api";
     fetch(`${baseUrl}/public/documents/${id}`)
       .then(res => {
         if (!res.ok) throw new Error("Dokumen tidak ditemukan atau terjadi kesalahan");
@@ -122,7 +122,7 @@ export function SharedDocumentPage() {
     try {
       const signatureDataUrl = canvasRef.current.toDataURL("image/png");
       
-      const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+      const baseUrl = "/api";
       const res = await fetch(`${baseUrl}/public/documents/${id}/sign`, {
         method: "POST",
         headers: {
