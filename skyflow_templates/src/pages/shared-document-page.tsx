@@ -16,6 +16,21 @@ export function SharedDocumentPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [hasSignature, setHasSignature] = useState(false);
+  const lastPos = useRef<{ x: number; y: number } | null>(null);
+
+  // Resize canvas to match its CSS display size (fixes coordinate mismatch)
+  const resizeCanvas = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    if (canvas.width !== Math.round(rect.width * dpr) || canvas.height !== Math.round(rect.height * dpr)) {
+      canvas.width = Math.round(rect.width * dpr);
+      canvas.height = Math.round(rect.height * dpr);
+      const ctx = canvas.getContext("2d");
+      if (ctx) ctx.scale(dpr, dpr);
+    }
+  };
 
   useEffect(() => {
     if (!id) return;
@@ -47,30 +62,36 @@ export function SharedDocumentPage() {
       });
   }, [id]);
 
-  // Canvas Drawing Logic
+  const getPos = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return { x: 0, y: 0 };
+    const rect = canvas.getBoundingClientRect();
+    if ('touches' in e) {
+      return {
+        x: e.touches[0].clientX - rect.left,
+        y: e.touches[0].clientY - rect.top,
+      };
+    }
+    return {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    };
+  };
+
   const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    resizeCanvas();
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-
-    ctx.beginPath();
+    const pos = getPos(e);
     ctx.lineWidth = 2;
     ctx.lineCap = "round";
-    ctx.strokeStyle = "#000";
-    
-    const rect = canvas.getBoundingClientRect();
-    let x, y;
-    
-    if ('touches' in e) {
-      x = e.touches[0].clientX - rect.left;
-      y = e.touches[0].clientY - rect.top;
-    } else {
-      x = e.clientX - rect.left;
-      y = e.clientY - rect.top;
-    }
-    
-    ctx.moveTo(x, y);
+    ctx.lineJoin = "round";
+    ctx.strokeStyle = "#1e293b";
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+    lastPos.current = pos;
     setIsDrawing(true);
     setHasSignature(true);
   };
@@ -81,22 +102,13 @@ export function SharedDocumentPage() {
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-
-    const rect = canvas.getBoundingClientRect();
-    let x, y;
-    
-    if ('touches' in e) {
-      // Prevent scrolling while drawing
-      if(e.cancelable) e.preventDefault();
-      x = e.touches[0].clientX - rect.left;
-      y = e.touches[0].clientY - rect.top;
-    } else {
-      x = e.clientX - rect.left;
-      y = e.clientY - rect.top;
-    }
-    
-    ctx.lineTo(x, y);
+    if ('touches' in e && e.cancelable) e.preventDefault();
+    const pos = getPos(e);
+    ctx.lineTo(pos.x, pos.y);
     ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+    lastPos.current = pos;
   };
 
   const stopDrawing = () => {
@@ -259,9 +271,8 @@ export function SharedDocumentPage() {
                 <div className="relative border-2 border-dashed border-slate-300 rounded-xl bg-white w-full max-w-lg touch-none overflow-hidden hover:border-slate-400 transition-colors">
                   <canvas
                     ref={canvasRef}
-                    width={500}
-                    height={200}
-                    className="w-full h-full cursor-crosshair touch-none"
+                    className="w-full block cursor-crosshair touch-none"
+                    style={{ height: "200px" }}
                     onMouseDown={startDrawing}
                     onMouseMove={draw}
                     onMouseUp={stopDrawing}
