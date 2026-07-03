@@ -30,19 +30,32 @@
 
   display: block;
   width: 100%;
-  overflow-x: hidden;
+  overflow-x: auto;
+  word-wrap: break-word;
+  word-break: break-word;
 }
 
 /* ── TOOLBAR ── */
 .skyflow-doc .tpl-toolbar {
   width: 100%;
-  max-width: 920px;
+  max-width: 820px;
   display: flex;
   gap: 12px;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   margin: 0 auto 18px;
+  
+  /* Sticky Floating Toolbar */
+  position: sticky;
+  top: 16px;
+  z-index: 40;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  padding: 12px 16px;
+  border-radius: 8px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--gold-line);
 }
 .skyflow-doc .tpl-toolbar-left {
   display: flex;
@@ -180,25 +193,7 @@
   display: flex;
   flex-direction: column;
   color: var(--ink);
-  background-color: var(--cream);
-  background-image: radial-gradient(
-      circle,
-      rgba(213, 148, 59, 0.22) 1px,
-      transparent 1px
-    ),
-    repeating-linear-gradient(
-      -55deg,
-      transparent,
-      transparent 48px,
-      rgba(213, 148, 59, 0.045) 48px,
-      rgba(213, 148, 59, 0.045) 49px
-    ),
-    radial-gradient(
-      ellipse 80% 60% at 50% 30%,
-      rgba(255, 248, 220, 0.6) 0%,
-      transparent 70%
-    );
-  background-size: 24px 24px, 100% 100%, 100% 100%;
+  background-color: white;
   box-shadow: 0 0 0 1px rgba(213, 148, 59, 0.3), 0 20px 80px rgba(0, 0, 0, 0.35);
 }
 
@@ -243,15 +238,7 @@
   overflow: hidden;
 }
 .skyflow-doc .hdr-lines {
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(
-    55deg,
-    transparent,
-    transparent 30px,
-    rgba(213, 148, 59, 0.035) 30px,
-    rgba(213, 148, 59, 0.035) 31px
-  );
+  display: none;
 }
 .skyflow-doc .hdr-inner {
   position: relative;
@@ -274,6 +261,19 @@
   font-weight: 700;
   color: var(--gold-light);
   letter-spacing: 0.04em;
+}
+.skyflow-doc .brand-logo {
+  height: 180px;
+  width: auto;
+  object-fit: contain;
+  margin: -50px 0 -30px -10px;
+}
+.skyflow-doc .footer-logo {
+  height: 100px;
+  width: auto;
+  object-fit: contain;
+  margin: -42px -10px -42px 0;
+  vertical-align: middle;
 }
 .skyflow-doc .brand-tagline {
   font-size: 8.5px;
@@ -308,6 +308,13 @@
 }
 
 /* status pill / badge */
+.skyflow-doc .bottom-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 40px;
+  padding-top: 80px;
+}
 .skyflow-doc .status-pill {
   display: inline-flex;
   align-items: center;
@@ -389,6 +396,7 @@
   font-size: 14px;
   font-weight: 500;
   color: var(--ink);
+  white-space: nowrap;
 }
 .skyflow-doc .meta-val.accent {
   font-weight: 700;
@@ -510,16 +518,23 @@
 
 /* ── BOTTOM SPLIT ── */
 .skyflow-doc .bottom-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  justify-content: space-between;
   gap: 40px;
-  padding: 0 52px 34px;
+  padding: 34px 52px 34px;
   border-bottom: 1px solid var(--gold-line);
+}
+.skyflow-doc .sig-block {
+  flex: 1;
 }
 
 /* totals */
 .skyflow-doc .totals-wrap {
-  align-self: end;
+  width: 320px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 .skyflow-doc .totals-box {
   border-top: 1px solid var(--gold-line);
@@ -684,10 +699,14 @@
   background: rgba(213, 148, 59, 0.06);
 }
 .skyflow-doc .editable-inline {
-  display: inline-block;
+  display: inline;
+  word-wrap: break-word;
+  word-break: break-word;
 }
 .skyflow-doc .editable-block {
   display: block;
+  word-wrap: break-word;
+  word-break: break-word;
 }
 
 /* ════════════════════════════════════════
@@ -802,7 +821,7 @@
 }
 .skyflow-doc .pay-detail-section {
   padding: 24px 52px;
-  border-bottom: 1px solid var(--gold-line);
+  border-bottom: none;
 }
 .skyflow-doc .pay-grid {
   display: grid;
@@ -1056,9 +1075,33 @@
   flex: 1;
 }
 
-/* ── RESPONSIVE ── 
- * Dihapus karena kita menggunakan zoom scaling untuk mempertahankan layout A4. 
- */
+/* ── RESPONSIVE ── */
+@media screen and (max-width: 860px) {
+  .skyflow-doc .tpl-toolbar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    border-radius: 0;
+    width: 100vw;
+    margin-left: -24px;
+    padding: 12px 24px;
+  }
+  .skyflow-doc .tpl-toolbar::-webkit-scrollbar {
+    display: none;
+  }
+  .skyflow-doc .tpl-toolbar-left,
+  .skyflow-doc .tpl-toolbar-right,
+  .skyflow-doc .status-toggle {
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .skyflow-doc .num-builder label,
+  .skyflow-doc .num-builder input {
+    flex-shrink: 0;
+  }
+}
 
 /* ── PRINT ── */
 @media print {
@@ -1068,7 +1111,8 @@
   }
   .skyflow-doc .tpl-toolbar,
   .skyflow-doc .sig-ctrl,
-  .skyflow-doc .no-print {
+  .skyflow-doc .no-print,
+  .skyflow-doc .hdr-lines {
     display: none !important;
   }
   .skyflow-doc .paper {
@@ -1076,6 +1120,8 @@
     max-width: 100% !important;
     width: 100% !important;
     border-radius: 0 !important;
+    background-image: none !important;
+    background-color: white !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }

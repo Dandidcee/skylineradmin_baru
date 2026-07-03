@@ -47,7 +47,7 @@ const PAY_DETAILS: Record<
   bri: {
     label: "🏦 BRI",
     bank: "Bank Rakyat Indonesia (BRI)",
-    rek: "4362-01-007056-50",
+    rek: "436201007056501",
     name: "Dandi Cahyaman",
   },
   mandiri: {
@@ -59,10 +59,11 @@ const PAY_DETAILS: Record<
 };
 
 export function InvoiceTemplate() {
-  const sig = useSignature();
+  const sig = useSignature("/signature.png");
+  const refFromUrl = new URLSearchParams(window.location.search).get('ref');
 
   const [invDate, setInvDate] = useState(getTodayDate());
-  const [invProj, setInvProj] = useState("001");
+  const [invProj, setInvProj] = useState(refFromUrl || "001");
   const [invNo, setInvNo] = useState("SFI/08-06-2026/001");
   const [status, setStatus] = useState<"unpaid" | "paid">("unpaid");
   const [items, setItems] = useState<LineItem[]>(INITIAL_ITEMS);
@@ -101,7 +102,7 @@ export function InvoiceTemplate() {
     }
   }, [selectedClientId, clients]);
 
-  const preview = `SFI/${invDate || "DD-MM-YYYY"}/${String(invProj || "001").padStart(3, "0")}`;
+  const preview = `SFI-INV/${invDate || "DD-MM-YYYY"}/${String(invProj || "001").padStart(3, "0")}`;
 
   const { subtotal, tax, grand, dp, remaining } = useMemo(() => {
     const subtotal = items.reduce((s, it) => s + it.qty * it.price, 0);
@@ -146,8 +147,8 @@ export function InvoiceTemplate() {
       } else {
         toastManager.success({ title: "Berhasil", description: "Invoice disimpan." });
       }
-    } catch(err) {
-      toastManager.error({ title: "Gagal", description: "Gagal menyimpan dokumen." });
+    } catch(err: any) {
+      toastManager.error({ title: "Gagal", description: err.message || "Gagal menyimpan dokumen." });
     } finally {
       setIsSaving(false);
     }
@@ -160,7 +161,7 @@ export function InvoiceTemplate() {
         <div className="tpl-toolbar-left">
           <div className="num-builder">
             <label>No. Invoice:</label>
-            <span style={{ color: "var(--gold)", fontWeight: 700, fontSize: 12 }}>SFI</span>
+            <span style={{ color: "var(--gold)", fontWeight: 700, fontSize: 12 }}>SFI-INV</span>
             <span className="sep">/</span>
             <input
               type="text"
@@ -279,7 +280,7 @@ export function InvoiceTemplate() {
           <div className="hdr-lines" />
           <div className="hdr-inner">
             <div className="logo-area">
-              <span className="brand-name">SkyFlowID</span>
+              <img src="/LogoMain.png" alt="SkyFlow Logo" className="brand-logo" />
               <div className="brand-tagline">Solusi Kecerdasan Buatan</div>
               <div className={`status-pill ${status}`}>
                 <div className="status-dot" />
@@ -310,9 +311,9 @@ export function InvoiceTemplate() {
             </div>
           </div>
           <div>
-            <div className="meta-lbl">Referensi Proyek</div>
+            <div className="meta-lbl">No. SPK / Kontrak</div>
             <div className="meta-val" contentEditable suppressContentEditableWarning>
-              AI-PRJ-2026
+              {refFromUrl || `SFI-AGR/${getTodayDate()}/001`}
             </div>
           </div>
           <div>
@@ -429,10 +430,12 @@ export function InvoiceTemplate() {
           </button>
         </div>
 
-        {/* BOTTOM: SIGNATURE + TOTALS */}
-        <div className="bottom-row">
-          <div className="sig-block">
-            <h3>Tanda Tangan Digital</h3>
+        {/* BOTTOM: SIGNATURE + TOTALS + PAYMENT + QR */}
+        <div className="bottom-row" style={{ display: "block" }}>
+          {/* TOP SECTION: Signature & Totals */}
+          <div style={{ display: "flex", justifyContent: "space-between", gap: "40px" }}>
+            <div className="sig-block">
+              <h3>Tanda Tangan Digital</h3>
             <div className="sig-canvas-wrap" ref={sig.wrapRef}>
               <canvas ref={sig.canvasRef} />
               {!sig.hasSignature && (
@@ -468,7 +471,7 @@ export function InvoiceTemplate() {
           </div>
 
           <div className="totals-wrap">
-            <div className="totals-box">
+            <div className="totals-box" style={{ width: "100%", marginBottom: "0" }}>
               <div className="tot-row">
                 <span className="tot-lbl">Subtotal</span>
                 <span style={{ fontWeight: 500 }}>{formatRupiah(subtotal)}</span>
@@ -505,38 +508,54 @@ export function InvoiceTemplate() {
           </div>
         </div>
 
-        {/* PAYMENT METHODS */}
-        <div className="pay-detail-section">
-          <div className="section-lbl">Metode Pembayaran</div>
-          <div className="pay-type-toggle no-print" style={{ marginBottom: 16 }}>
-            {(Object.keys(PAY_DETAILS) as PayMethod[]).map((m) => (
-              <button
-                key={m}
-                className={`pay-type-btn${payMethod === m ? " active" : ""}`}
-                onClick={() => setPayMethod(m)}
-              >
-                {PAY_DETAILS[m].label}
-              </button>
-            ))}
-          </div>
-          <div className="pay-grid">
-            <div className="pay-field">
-              <div className="pay-field-lbl">Bank / Platform</div>
-              <div className="pay-field-val">{PAY_DETAILS[payMethod].bank}</div>
+        {/* BOTTOM SECTION: Payment & QR Code */}
+        <div style={{ display: "flex", justifyContent: "space-between", gap: "40px", marginTop: "40px", borderTop: "1px solid var(--gold-line)", paddingTop: "24px" }}>
+          <div className="pay-detail-section" style={{ flex: 1, padding: 0, border: "none" }}>
+            <div className="section-lbl" style={{ marginBottom: 12 }}>Metode Pembayaran</div>
+            <div className="pay-type-toggle no-print" style={{ marginBottom: 16 }}>
+              {(Object.keys(PAY_DETAILS) as PayMethod[]).map((m) => (
+                <button
+                  key={m}
+                  className={`pay-type-btn${payMethod === m ? " active" : ""}`}
+                  onClick={() => setPayMethod(m)}
+                >
+                  {PAY_DETAILS[m].label}
+                </button>
+              ))}
             </div>
-            <div className="pay-field">
-              <div className="pay-field-lbl">No. Rekening / Akun</div>
-              <div className="pay-field-val" contentEditable suppressContentEditableWarning>
-                {PAY_DETAILS[payMethod].rek}
+            <div className="pay-grid" style={{ marginTop: 0, gridTemplateColumns: "1fr", gap: "12px" }}>
+              <div className="pay-field">
+                <div className="pay-field-lbl">Bank / Platform</div>
+                <div className="pay-field-val" style={{ borderBottom: "none", paddingBottom: 0 }}>{PAY_DETAILS[payMethod].bank}</div>
+              </div>
+              <div className="pay-field">
+                <div className="pay-field-lbl">No. Rekening / Akun</div>
+                <div className="pay-field-val" style={{ fontSize: "16px", letterSpacing: "1px" }} contentEditable suppressContentEditableWarning>
+                  {PAY_DETAILS[payMethod].rek}
+                </div>
+              </div>
+              <div className="pay-field">
+                <div className="pay-field-lbl">Atas Nama</div>
+                <div className="pay-field-val" style={{ borderBottom: "none", paddingBottom: 0 }} contentEditable suppressContentEditableWarning>
+                  {PAY_DETAILS[payMethod].name}
+                </div>
               </div>
             </div>
-            <div className="pay-field">
-              <div className="pay-field-lbl">Atas Nama</div>
-              <div className="pay-field-val" contentEditable suppressContentEditableWarning>
-                {PAY_DETAILS[payMethod].name}
-              </div>
+          </div>
+
+          <div style={{ width: "320px", flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+            <div className="qr-box" style={{ width: 140, height: 140, background: "white", padding: 8, border: "1.5px solid var(--gold-line)", borderRadius: 10 }}>
+              <img 
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(`Bank: ${PAY_DETAILS[payMethod].bank}\nAtas Nama: ${PAY_DETAILS[payMethod].name}\nNo. Rekening: ${PAY_DETAILS[payMethod].rek}\n\nCatatan: Pastikan nama penerima sesuai`)}`} 
+                alt="QR Code" 
+                style={{ width: "100%", height: "100%", objectFit: "contain" }} 
+              />
+            </div>
+            <div style={{ fontSize: "10px", fontWeight: 800, color: "var(--ink2)", textAlign: "center", letterSpacing: "0.1em", textTransform: "uppercase", marginTop: "12px" }}>
+              Pindai dengan<br/>QR Scanner
             </div>
           </div>
+        </div>
         </div>
 
         {/* FOOTER */}
@@ -547,7 +566,7 @@ export function InvoiceTemplate() {
             Pembayaran dianggap sah setelah dana diterima.
           </div>
           <div className="footer-brand">
-            <span>SkyFlowID</span>
+            <img src="/LogoMain.png" alt="SkyFlow" className="footer-logo" />
           </div>
         </div>
       </div>

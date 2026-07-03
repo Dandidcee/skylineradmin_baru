@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { FileText, FolderArchive, Layers, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { AppLayout } from "@/components/layout/app-layout";
@@ -12,16 +11,28 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useDocuments } from "@/store/document-store";
-import { getDashboardStats } from "@/services/document-service";
-import type { DashboardStats } from "@/services/types";
 
 export function DashboardPage() {
   const { documents, loading } = useDocuments();
-  const [stats, setStats] = useState<DashboardStats | null>(null);
 
-  useEffect(() => {
-    void getDashboardStats().then(setStats);
-  }, []);
+  const totalDocuments = documents.length;
+  const currentMonth = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
+  const generatedThisMonth = documents.filter(d => {
+    const date = new Date(d.createdAt);
+    return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+  }).length;
+  
+  const templatesCount = new Set(documents.map(d => d.template)).size;
+  const totalSizeKb = documents.reduce((acc, d) => acc + (d.sizeKb || 0), 0);
+  const storageUsedMb = (totalSizeKb / 1024).toFixed(2);
+
+  const stats = {
+    totalDocuments,
+    generatedThisMonth,
+    templates: templatesCount || 4, // fallback if 0
+    storageUsedMb
+  };
 
   const recent = documents.slice(0, 4);
 

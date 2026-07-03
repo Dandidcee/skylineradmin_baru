@@ -38,7 +38,7 @@ export function TemplatesPage() {
           <Button
             variant="outline"
             size="sm"
-            className="w-fit"
+            className="w-fit no-print"
             onClick={handleBack}
           >
             <ArrowLeft className="h-4 w-4" />

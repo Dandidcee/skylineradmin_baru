@@ -29,7 +29,8 @@ import {
   DragOverlay,
   closestCorners,
   KeyboardSensor,
-  PointerSensor,
+  MouseSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   defaultDropAnimationSideEffects,
@@ -326,9 +327,15 @@ export function ProjectsPage() {
   }, []);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
+    useSensor(MouseSensor, {
       activationConstraint: {
         distance: 5,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
       },
     }),
     useSensor(KeyboardSensor)
@@ -476,7 +483,7 @@ export function ProjectsPage() {
   return (
     <AppLayout title="Projects Dashboard">
       <div className="flex flex-col gap-6 w-full max-w-full overflow-hidden">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold font-heading">Kanban Board</h1>
             <p className="text-text/60">Kelola dan pantau progres proyek aktif.</p>

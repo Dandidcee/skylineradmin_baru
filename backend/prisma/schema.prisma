@@ -44,6 +44,7 @@ model Client {
   // Relations
   projects          Project[]
   documents         Document[]
+  credentials       Credential[]
   
   // Creator tracking
   creatorId         String?
@@ -65,6 +66,7 @@ model Project {
   maxRevisions       Int        @default(3)
   documents          Document[]
   finances           Finance[]
+  credentials        Credential[]
   tasks              Task[]
   revisions          Revision[]
   maintenanceCosts   MaintenanceCost[]
@@ -113,8 +115,8 @@ model Finance {
   status      String   // PENDING, PAID, PARTIAL
   notes       String?
   dueDate     DateTime?
-  projectId   String
-  project     Project  @relation(fields: [projectId], references: [id])
+  projectId   String?
+  project     Project? @relation(fields: [projectId], references: [id])
   createdAt   DateTime @default(now())
 }
 
@@ -193,3 +195,19 @@ model MaintenanceCost {
   createdAt   DateTime @default(now())
 }
 
+model Credential {
+  id        String   @id @default(uuid())
+  name      String
+  url       String?
+  username  String?
+  password  String?
+  notes     String?
+  
+  clientId  String?
+  client    Client?  @relation(fields: [clientId], references: [id])
+  
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id])
+  
+  createdAt DateTime @default(now())
+}

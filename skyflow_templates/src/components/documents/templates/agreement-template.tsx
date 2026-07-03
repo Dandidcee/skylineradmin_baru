@@ -69,6 +69,7 @@ const ARTICLES: { title: string; body: React.ReactNode }[] = [
       <ol>
         <li>Biaya layanan pihak ketiga seperti VPS, hosting, domain, WhatsApp API, OpenAI API, cloud service, database, email service, dan layanan lainnya menjadi tanggung jawab Pihak Kedua kecuali disepakati lain.</li>
         <li>Pihak Pertama tidak bertanggung jawab atas perubahan harga, gangguan layanan, suspend akun, atau perubahan kebijakan dari penyedia layanan pihak ketiga.</li>
+        <li>Apabila terjadi pemblokiran (banned), penangguhan (suspend), pembatasan akses, atau perubahan sistem dari layanan pihak ketiga (misalnya WhatsApp API, WAHA, OpenAI, dll) yang mengharuskan adanya perbaikan kode, migrasi, atau penggantian tools, maka hal tersebut berada di luar ruang lingkup pemeliharaan (maintenance) gratis. Segala perbaikan terkait hal ini akan dianggap sebagai pekerjaan baru dan Pihak Kedua wajib membayar biaya tambahan sesuai dengan harga yang ditentukan oleh Pihak Pertama.</li>
       </ol>
     ),
   },
@@ -148,7 +149,7 @@ const ARTICLES: { title: string; body: React.ReactNode }[] = [
 ];
 
 export function AgreementTemplate() {
-  const sig1 = useSignature();
+  const sig1 = useSignature("/signature.png");
   const sig2 = useSignature();
 
   const [clients, setClients] = useState<any[]>([]);
@@ -180,8 +181,12 @@ export function AgreementTemplate() {
     }
   }, [selectedClientId, clients]);
 
+  const [docDate, setDocDate] = useState(getTodayDate());
+  const [docProj, setDocProj] = useState("001");
+  const refFromUrl = new URLSearchParams(window.location.search).get('ref');
+
   const [isSaving, setIsSaving] = useState(false);
-  const docNo = `SFI-AGR/${getTodayDate()}/001`;
+  const docNo = `SFI-AGR/${getTodayDate()}/${docProj}`;
 
   const handleSaveAndPrint = async () => {
     setIsSaving(true);
@@ -197,8 +202,8 @@ export function AgreementTemplate() {
         sizeKb: snap?.sizeKb
       });
       window.print();
-    } catch(err) {
-      toastManager.error({ title: "Gagal", description: "Gagal menyimpan dokumen." });
+    } catch(err: any) {
+      toastManager.error({ title: "Gagal", description: err.message || "Gagal menyimpan dokumen." });
     } finally {
       setIsSaving(false);
     }
@@ -232,7 +237,7 @@ export function AgreementTemplate() {
           <div className="hdr-lines" />
           <div className="hdr-inner center">
             <div className="logo-area">
-              <span className="brand-name">SkyFlowID</span>
+              <img src="/LogoMain.png" alt="SkyFlow Logo" className="brand-logo" />
               <div className="brand-tagline">Solusi Kecerdasan Buatan</div>
             </div>
             <div className="doc-label">
@@ -245,6 +250,21 @@ export function AgreementTemplate() {
         </div>
 
         <div className="g-rule" />
+
+        <div className="meta-row" style={{ gridTemplateColumns: "repeat(2, 1fr)", marginBottom: "32px" }}>
+          <div>
+            <div className="meta-lbl">Referensi Implementation Plan</div>
+            <div className="meta-val" contentEditable suppressContentEditableWarning>
+              {refFromUrl || `SFI-IMP/${getTodayDate()}/N8N-AUTO`}
+            </div>
+          </div>
+          <div>
+            <div className="meta-lbl">Tanggal Efektif</div>
+            <div className="meta-val accent" contentEditable suppressContentEditableWarning>
+              {getTodayLongDate()}
+            </div>
+          </div>
+        </div>
 
         <div className="content-body">
           <div className="intro">
@@ -303,7 +323,7 @@ export function AgreementTemplate() {
           ))}
         </div>
 
-        <div className="page-break" />
+
 
         {/* SIGNATURES */}
         <div className="sig-section">
@@ -375,7 +395,7 @@ export function AgreementTemplate() {
             Dilengkapi dengan otentikasi tanda tangan digital.
           </div>
           <div className="footer-brand">
-            <span>SkyFlowID</span>
+            <img src="/LogoMain.png" alt="SkyFlow" className="footer-logo" />
           </div>
         </div>
       </div>

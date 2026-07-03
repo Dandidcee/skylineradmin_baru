@@ -19,6 +19,25 @@ export function SharedDocumentPage() {
   const [hasSignature, setHasSignature] = useState(false);
   const lastPos = useRef<{ x: number; y: number } | null>(null);
 
+  // Iframe scaling — controlled from outside so iOS Safari can't break it
+  const iframeContainerRef = useRef<HTMLDivElement>(null);
+  const [iframeScale, setIframeScale] = useState(1);
+  const [containerWidth, setContainerWidth] = useState(820);
+
+  useEffect(() => {
+    const container = iframeContainerRef.current;
+    if (!container) return;
+    const updateScale = () => {
+      const w = container.clientWidth || 820;
+      setContainerWidth(w);
+      setIframeScale(Math.min(1, w / 820));
+    };
+    updateScale();
+    const ro = new ResizeObserver(updateScale);
+    ro.observe(container);
+    return () => ro.disconnect();
+  }, [htmlContent]);
+
   // Halaman publik ini selalu mode terang (tidak ikut tema admin)
   useEffect(() => {
     const root = document.documentElement;
@@ -65,7 +84,9 @@ export function SharedDocumentPage() {
           const base64Data = data.fileUrl.split(",")[1];
           try {
             const decoded = decodeURIComponent(escape(atob(base64Data)));
-            setHtmlContent(decoded);
+            // Disable all contenteditable elements to prevent client edits
+            const readOnlyHtml = decoded.replace(/contenteditable(="[^"]*")?/gi, 'contenteditable="false"');
+            setHtmlContent(readOnlyHtml);
           } catch (e) {
             console.error("Gagal mendecode HTML", e);
           }
@@ -207,7 +228,7 @@ export function SharedDocumentPage() {
 
   return (
     <>
-      <div className="min-h-screen bg-slate-50 text-slate-900 py-8 px-4 sm:px-6 flex flex-col items-center font-sans">
+      <div className="min-h-screen bg-slate-50 text-slate-900 py-8 px-4 sm:px-6 flex flex-col items-center font-sans overflow-x-hidden w-full">
       <div className="max-w-4xl w-full flex flex-col gap-6">
         
         {/* Header */}
@@ -217,10 +238,11 @@ export function SharedDocumentPage() {
               <FileText className="h-6 w-6 text-blue-600" />
               {doc.title}
             </h1>
-            <p className="text-slate-500 mt-1">
-              Untuk: <span className="font-semibold text-slate-700">{doc.client?.name || "Klien"}</span>
-              {doc.project && <span> &bull; Project: {doc.project.name}</span>}
-            </p>
+              <p className="text-slate-500 mt-1 text-sm md:text-base">
+                Untuk: <span className="font-semibold text-slate-700">{doc.client?.name || "Klien"}</span>
+                {doc.project && <span> &bull; Project: {doc.project.name}</span>}
+                {doc.creator && <span> &bull; Dibuat oleh: <span className="font-medium text-slate-700">{doc.creator.name}</span></span>}
+              </p>
           </div>
           
           {doc.clientSignature ? (
@@ -243,15 +265,26 @@ export function SharedDocumentPage() {
           </CardHeader>
           <CardContent className="p-0">
             {htmlContent ? (
-              <div className="w-full h-[60vh] md:h-[70vh] bg-white overflow-auto relative">
-                <iframe 
-                  srcDoc={htmlContent} 
-                  title="Document Preview"
-                  className="w-full h-full border-0"
-                  sandbox="allow-scripts"
-                />
-                {/* Overlay transparan untuk mencegah klien mengedit konten dokumen */}
-                <div className="absolute inset-0 z-10 cursor-default select-none" />
+              <div
+                ref={iframeContainerRef}
+                className="w-full bg-[#f1f5f9] overflow-y-auto overflow-x-hidden relative rounded-b-xl border-b border-slate-100"
+                style={{ height: '60vh' }}
+              >
+                {/* Wrapper div yang di-scale dari luar — bukan dari dalam iframe */}
+                <div style={{
+                  width: '820px',
+                  transformOrigin: 'top left',
+                  transform: `scale(${iframeScale})`,
+                  marginLeft: `${Math.max(0, (containerWidth - 820 * iframeScale) / 2)}px`,
+                  height: `calc(60vh / ${iframeScale})`,
+                }}>
+                  <iframe
+                    srcDoc={htmlContent}
+                    title="Document Preview"
+                    style={{ width: '820px', height: '100%', border: 0, display: 'block' }}
+                    sandbox="allow-scripts"
+                  />
+                </div>
               </div>
             ) : doc.fileUrl ? (
               <div className="w-full h-[60vh] flex items-center justify-center bg-slate-100">
@@ -311,7 +344,7 @@ export function SharedDocumentPage() {
                   )}
                 </div>
                 
-                <div className="flex gap-3 w-full max-w-lg mt-6">
+                <div className="flex flex-col sm:flex-row gap-3 w-full max-w-lg mt-6">
                   <Button 
                     variant="outline" 
                     className="flex-1" 

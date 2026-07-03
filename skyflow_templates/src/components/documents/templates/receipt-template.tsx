@@ -29,7 +29,7 @@ const PAY_DETAILS: Record<
 };
 
 export function ReceiptTemplate() {
-  const sig = useSignature();
+  const sig = useSignature("/signature.png");
 
   const [recDate, setRecDate] = useState(getTodayDate());
   const [recSeq, setRecSeq] = useState("001");
@@ -50,6 +50,7 @@ export function ReceiptTemplate() {
   // Nominal states
   const [jumlahDibayar, setJumlahDibayar] = useState("Rp 0");
   const [sisaTagihan, setSisaTagihan] = useState("Rp —");
+  const refFromUrl = new URLSearchParams(window.location.search).get('ref');
   const [nilaiTotal, setNilaiTotal] = useState("Rp 0");
   const [saveAmount, setSaveAmount] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
@@ -108,8 +109,8 @@ export function ReceiptTemplate() {
       } else {
         toastManager.success({ title: "Berhasil", description: "Bukti Pembayaran disimpan." });
       }
-    } catch(err) {
-      toastManager.error({ title: "Gagal", description: "Gagal menyimpan dokumen." });
+    } catch(err: any) {
+      toastManager.error({ title: "Gagal", description: err.message || "Gagal menyimpan dokumen." });
     } finally {
       setIsSaving(false);
     }
@@ -235,7 +236,7 @@ export function ReceiptTemplate() {
           <div className="hdr-lines" />
           <div className="hdr-inner">
             <div className="logo-area">
-              <span className="brand-name">SkyFlowID</span>
+              <img src="/LogoMain.png" alt="SkyFlow Logo" className="brand-logo" />
               <div className="brand-tagline">Solusi Kecerdasan Buatan</div>
               <div className={`status-pill ${payStatus}`}>
                 <div className="status-dot" />
@@ -262,7 +263,7 @@ export function ReceiptTemplate() {
           <div>
             <div className="meta-lbl">No. Invoice Referensi</div>
             <div className="meta-val" contentEditable suppressContentEditableWarning>
-              SFI/{getTodayDate()}/001
+              {refFromUrl || `SFI-INV/${getTodayDate()}/001`}
             </div>
           </div>
           <div>
@@ -315,7 +316,7 @@ export function ReceiptTemplate() {
             <div className="pay-field">
               <div className="pay-field-lbl">Tipe Pembayaran</div>
               <div className="pay-type-toggle no-print" style={{ marginTop: 6 }}>
-                {(["Transfer Bank", "DANA", "Tunai", "QRIS"] as PayType[]).map((t) => (
+                {(["Transfer", "DANA", "Tunai", "QRIS"] as PayType[]).map((t) => (
                   <button
                     key={t}
                     className={`pay-type-btn${payType === t ? " active" : ""}`}
@@ -431,7 +432,7 @@ export function ReceiptTemplate() {
                   {jumlahDibayar}
                 </div>
                 <div className="nominal-ref">
-                  Ref. Invoice: <span>SFI/{getTodayDate()}/001</span>
+                  Ref. Invoice: <span>{refFromUrl || `SFI-INV/${getTodayDate()}/001`}</span>
                 </div>
               </div>
             </div>
@@ -491,10 +492,9 @@ export function ReceiptTemplate() {
         </div>
 
         {/* SIGNATURE */}
-        <div className="sig-section">
-          <div className="sig-inner">
-            <div className="sig-block" style={{ width: 260, flexShrink: 0 }}>
-              <h3>Tanda Tangan Penerima</h3>
+        <div className="bottom-row" style={{ paddingTop: 40 }}>
+          <div className="sig-block" style={{ width: 260, flex: "none" }}>
+            <h3>Disetujui Oleh</h3>
               <div className="sig-canvas-wrap" ref={sig.wrapRef} style={{ height: 90 }}>
                 <canvas ref={sig.canvasRef} />
                 {!sig.hasSignature && (
@@ -539,7 +539,6 @@ export function ReceiptTemplate() {
               </div>
             </div>
           </div>
-        </div>
 
         {/* FOOTER */}
         <div className="footer-band">
@@ -549,7 +548,7 @@ export function ReceiptTemplate() {
             Simpan dokumen ini sebagai bukti pembayaran resmi Anda.
           </div>
           <div className="footer-brand">
-            <span>SkyFlowID</span>
+            <img src="/LogoMain.png" alt="SkyFlow" className="footer-logo" />
           </div>
         </div>
       </div>

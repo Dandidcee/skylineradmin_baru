@@ -68,6 +68,15 @@ function formatDate(iso: string) {
   });
 }
 
+function getNextTemplate(templateName: string) {
+  const t = templateName.toLowerCase();
+  if (t.includes('implementation') || t.includes('plan')) return { label: 'Surat Perjanjian', link: '/templates?t=agreement' };
+  if (t.includes('agreement') || t.includes('perjanjian')) return { label: 'Invoice', link: '/templates?t=invoice' };
+  if (t.includes('invoice')) return { label: 'Kuitansi', link: '/templates?t=receipt' };
+  if (t.includes('receipt') || t.includes('kuitansi') || t.includes('bayar')) return { label: 'Berita Acara', link: '/templates?t=handover' };
+  return null;
+}
+
 export function DocumentsPage() {
   const { documents, loading, error, refresh } = useDocuments();
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
@@ -395,6 +404,29 @@ export function DocumentsPage() {
                           Unduh
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
+                        {(() => {
+                          const next = getNextTemplate(doc.template);
+                          if (!next) {
+                            return (
+                              <>
+                                <DropdownMenuItem disabled>
+                                  <CheckCircle2 className="h-4 w-4 mr-2 text-emerald-500" />
+                                  Urutan Dokumen Selesai
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                              </>
+                            );
+                          }
+                          return (
+                            <>
+                              <DropdownMenuItem onClick={() => window.location.href = `${next.link}&ref=${encodeURIComponent(doc.title)}`}>
+                                <FileText className="h-4 w-4 mr-2" />
+                                Lanjut ke {next.label}
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                            </>
+                          );
+                        })()}
                         <DropdownMenuItem onClick={() => setDocumentToDelete(doc)} className="text-red-600 focus:text-red-600 focus:bg-red-50">
                           <Trash2 className="h-4 w-4 mr-2" />
                           Hapus

@@ -14,6 +14,11 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
+  // Default to null if not provided
+  if (!req.body.projectId) {
+    req.body.projectId = null;
+  }
+  
   const finance = await prisma.finance.create({ data: req.body });
   
   if (req.body.projectId && (req.body.type === 'PAYMENT_RECEIPT' || req.body.status === 'PAID')) {

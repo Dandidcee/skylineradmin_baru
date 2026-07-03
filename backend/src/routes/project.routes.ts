@@ -18,6 +18,24 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   const data = req.body;
   const project = await prisma.project.create({ data, include: { client: true, revisions: true, maintenanceCosts: true } });
+  
+  try {
+    const numericPrice = parseFloat(String(data.price || "0").replace(/\D/g, "")) || 0;
+    if (numericPrice > 0) {
+      await prisma.finance.create({
+        data: {
+          type: 'PROJECT_FEE',
+          amount: numericPrice,
+          status: 'PENDING',
+          projectId: project.id,
+          notes: `Tagihan Proyek Utama: ${project.name}`
+        }
+      });
+    }
+  } catch (error) {
+    console.error("Gagal membuat auto finance record", error);
+  }
+
   res.json(project);
 });
 

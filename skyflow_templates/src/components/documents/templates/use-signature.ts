@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from "react";
  * - hint hilang saat mulai menggambar
  * - fungsi clear untuk menghapus tanda tangan
  */
-export function useSignature() {
+export function useSignature(defaultImageUrl?: string) {
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [hasSignature, setHasSignature] = useState(false);
@@ -62,6 +62,28 @@ export function useSignature() {
     };
 
     resize();
+    
+    if (defaultImageUrl) {
+      const img = new Image();
+      img.src = defaultImageUrl;
+      img.onload = () => {
+        const r = wrap.getBoundingClientRect();
+        const aspect = img.width / img.height;
+        const targetAspect = r.width / r.height;
+        let drawW = r.width;
+        let drawH = r.height;
+        if (aspect > targetAspect) {
+          drawH = r.width / aspect;
+        } else {
+          drawW = r.height * aspect;
+        }
+        const dx = (r.width - drawW) / 2;
+        const dy = (r.height - drawH) / 2;
+        ctx.drawImage(img, dx, dy, drawW, drawH);
+        setHasSignature(true);
+      };
+    }
+
     window.addEventListener("resize", resize);
     canvas.addEventListener("mousedown", start);
     canvas.addEventListener("mousemove", move);

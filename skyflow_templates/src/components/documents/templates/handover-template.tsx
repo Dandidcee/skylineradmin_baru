@@ -7,7 +7,7 @@ import { toastManager } from "@/components/ui/toast";
 import "./template.css";
 
 export function HandoverTemplate() {
-  const sig = useSignature(); // Signature for SkyFlow
+  const sig = useSignature("/signature.png"); // Signature for SkyFlow
   const sig2 = useSignature(); // Signature for Client
 
   const [docDate, setDocDate] = useState(getTodayDate());
@@ -174,7 +174,7 @@ export function HandoverTemplate() {
           <div className="hdr-lines" />
           <div className="hdr-inner">
             <div className="logo-area">
-              <span className="brand-name">SkyFlowID</span>
+              <img src="/LogoMain.png" alt="SkyFlow Logo" className="brand-logo" />
               <div className="brand-tagline">Solusi Kecerdasan Buatan</div>
             </div>
             <div className="doc-label">
@@ -201,9 +201,9 @@ export function HandoverTemplate() {
             </div>
           </div>
           <div>
-            <div className="meta-lbl">Referensi Proyek</div>
+            <div className="meta-lbl">No. Invoice / Kontrak</div>
             <div className="meta-val" contentEditable suppressContentEditableWarning>
-              {projectName || "N/A"}
+              SFI-INV/{getTodayDate()}/001
             </div>
           </div>
         </div>
@@ -367,7 +367,7 @@ export function HandoverTemplate() {
             Dokumen ini sah dan mengikat secara hukum.
           </div>
           <div className="footer-brand">
-            <span>SkyFlowID</span>
+            <img src="/LogoMain.png" alt="SkyFlow" className="footer-logo" />
           </div>
         </div>
 

@@ -48,6 +48,7 @@ export function PaymentPage() {
     let totalMaintenanceValue = 0;
     let totalMaintenancePaid = 0;
     let totalDebt = 0;
+    let totalExpense = 0;
     const unpaidClients: Array<{ name: string; project: string; debt: number; }> = [];
 
     projects.forEach((project) => {
@@ -61,8 +62,11 @@ export function PaymentPage() {
       const paidFinances = projectFinances.filter((f: any) => f.status === 'PAID');
       
       const isMaint = (t: string) => t === 'MAINTENANCE_PAYMENT' || t === 'RECURRING';
-      const paidForProject = paidFinances.filter((f: any) => !isMaint(f.type)).reduce((acc: number, curr: any) => acc + (curr.amount || 0), 0);
+      const isExpense = (t: string) => t === 'EXPENSE';
+      
+      const paidForProject = paidFinances.filter((f: any) => !isMaint(f.type) && !isExpense(f.type)).reduce((acc: number, curr: any) => acc + (curr.amount || 0), 0);
       const paidMaintenance = paidFinances.filter((f: any) => isMaint(f.type)).reduce((acc: number, curr: any) => acc + (curr.amount || 0), 0);
+      const expenseValue = paidFinances.filter((f: any) => isExpense(f.type)).reduce((acc: number, curr: any) => acc + (curr.amount || 0), 0);
 
       const maintenanceCosts = project.maintenanceCosts || [];
       const maintenanceValue = maintenanceCosts.reduce((acc: number, curr: any) => acc + (curr.amount || 0), 0);
@@ -75,6 +79,7 @@ export function PaymentPage() {
       totalMaintenanceValue += maintenanceValue;
       totalPaid += paidForProject;
       totalMaintenancePaid += paidMaintenance;
+      totalExpense += expenseValue;
       totalDebt += actualRemaining;
 
       if (actualRemaining > 0) {
@@ -86,12 +91,13 @@ export function PaymentPage() {
       }
     });
 
-    return { totalProjectValue, totalMaintenanceValue, totalPaid, totalMaintenancePaid, totalDebt, unpaidClients };
+    return { totalProjectValue, totalMaintenanceValue, totalPaid, totalMaintenancePaid, totalExpense, totalDebt, unpaidClients };
   }, [projects]);
 
   const [selectedProjectId, setSelectedProjectId] = useState<string>("");
-  const [paymentType, setPaymentType] = useState<"project" | "maintenance">("project");
+  const [paymentType, setPaymentType] = useState<"project" | "maintenance" | "expense">("project");
   const [paymentAmount, setPaymentAmount] = useState<string>("");
+  const [expenseNote, setExpenseNote] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
 
@@ -116,31 +122,41 @@ export function PaymentPage() {
   }, [selectedProject]);
 
   useEffect(() => {
-    if (paymentType === "maintenance") {
+    if (paymentType === "maintenance" || paymentType === "expense") {
       setPaymentAmount("");
     }
   }, [paymentType, selectedProject]);
 
   const handleRecordPayment = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedProject) return;
+    if (paymentType !== "expense" && !selectedProject) return;
     
     setIsSubmitting(true);
     setSuccessMsg("");
     try {
       const amount = parseMoney(paymentAmount);
       
-      // Buat record Finance baru bertipe PAYMENT_RECEIPT
-      await createFinance({
-        type: paymentType === "maintenance" ? 'MAINTENANCE_PAYMENT' : 'PAYMENT_RECEIPT',
+      const payload: any = {
+        type: paymentType === "maintenance" ? 'MAINTENANCE_PAYMENT' : (paymentType === 'expense' ? 'EXPENSE' : 'PAYMENT_RECEIPT'),
         amount: amount,
         status: 'PAID',
-        projectId: selectedProject.id,
-        notes: paymentType === "maintenance" ? 'Pembayaran Maintenance Manual via Dashboard' : 'Pembayaran Proyek Manual via Dashboard'
-      });
+      };
+
+      if (paymentType !== "expense") {
+        payload.projectId = selectedProject!.id;
+        payload.notes = paymentType === "maintenance" ? 'Pembayaran Maintenance Manual via Dashboard' : 'Pembayaran Proyek Manual via Dashboard';
+      } else {
+        payload.notes = expenseNote || 'Pengeluaran Operasional (Uang Keluar)';
+        if (selectedProjectId) {
+          payload.projectId = selectedProjectId; // optional
+        }
+      }
+
+      await createFinance(payload);
       
       setPaymentAmount("");
-      toast.success("Pembayaran berhasil dicatat");
+      setExpenseNote("");
+      toast.success(paymentType === "expense" ? "Uang keluar berhasil dicatat" : "Pembayaran berhasil dicatat");
       loadData();
     } catch (err: any) {
       console.error(err);
@@ -248,6 +264,23 @@ export function PaymentPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
+                Total Uang Keluar
+              </CardTitle>
+              <TrendingDown className="h-4 w-4 text-rose-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-xl font-bold md:text-2xl text-rose-600 dark:text-rose-400">
+                {formatRupiah(metrics.totalExpense)}
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Pengeluaran operasional
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
                 Klien Menunggak
               </CardTitle>
               <Users className="h-4 w-4 text-orange-500" />
@@ -276,7 +309,7 @@ export function PaymentPage() {
               <CardContent>
                 <form onSubmit={handleRecordPayment} className="flex flex-col gap-6">
                   <div className="flex flex-col gap-2">
-                    <label className="text-sm font-semibold text-text/80">Pilih Proyek</label>
+                    <label className="text-sm font-semibold text-text/80">Pilih Proyek (Opsional untuk Uang Keluar)</label>
                     <select
                       value={selectedProjectId}
                       onChange={(e) => {
@@ -284,7 +317,7 @@ export function PaymentPage() {
                         setSuccessMsg("");
                       }}
                       className="h-11 w-full rounded-md border border-input bg-transparent px-3 text-base outline-none focus:border-primary transition-colors"
-                      required
+                      required={paymentType !== "expense"}
                     >
                       <option value="" className="text-slate-900 bg-white">-- Pilih Proyek --</option>
                       {projects.map((proj) => {
@@ -308,10 +341,11 @@ export function PaymentPage() {
                     >
                       <option value="project" className="text-slate-900 bg-white">Pelunasan Proyek Utama</option>
                       <option value="maintenance" className="text-slate-900 bg-white">Maintenance Bulanan</option>
+                      <option value="expense" className="text-slate-900 bg-white">Uang Keluar</option>
                     </select>
                   </div>
 
-                  {selectedProject && (
+                  {selectedProject && paymentType !== "expense" && (
                     <div className="rounded-lg border bg-muted/10 p-5 shadow-sm">
                       <div className="grid gap-4 sm:grid-cols-3">
                         <div className="flex flex-col gap-1">
@@ -338,9 +372,9 @@ export function PaymentPage() {
                     </div>
                   )}
 
-                  {selectedProject && (
+                  {(selectedProject || paymentType === "expense") && (
                     <div className="flex flex-col gap-2">
-                      <label className="text-sm font-semibold text-text/80">Nominal Pembayaran Masuk (Rp)</label>
+                      <label className="text-sm font-semibold text-text/80">Nominal (Rp)</label>
                       <input
                         type="text"
                         value={paymentAmount ? new Intl.NumberFormat('id-ID').format(Number(paymentAmount)) : ""}
@@ -349,9 +383,25 @@ export function PaymentPage() {
                         className="h-11 w-full rounded-md border border-input bg-transparent px-3 text-base outline-none focus:border-primary transition-colors"
                         required
                       />
-                      <p className="text-xs text-text/50">
-                        Sisa tagihan akan otomatis berkurang sesuai dengan uang yang masuk.
-                      </p>
+                      {paymentType !== "expense" && (
+                        <p className="text-xs text-text/50">
+                          Sisa tagihan akan otomatis berkurang sesuai dengan uang yang masuk.
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {paymentType === "expense" && (
+                    <div className="flex flex-col gap-2">
+                      <label className="text-sm font-semibold text-text/80">Keterangan / Catatan</label>
+                      <input
+                        type="text"
+                        value={expenseNote}
+                        onChange={(e) => setExpenseNote(e.target.value)}
+                        placeholder="Contoh: Bayar Hosting, Operasional, dll"
+                        className="h-11 w-full rounded-md border border-input bg-transparent px-3 text-base outline-none focus:border-primary transition-colors"
+                        required
+                      />
                     </div>
                   )}
 
@@ -362,8 +412,8 @@ export function PaymentPage() {
                     </div>
                   )}
 
-                  <Button type="submit" disabled={!selectedProject || !paymentAmount || isSubmitting} className="w-fit">
-                    {isSubmitting ? "Menyimpan..." : "Simpan Uang Masuk"}
+                  <Button type="submit" disabled={(!selectedProject && paymentType !== "expense") || !paymentAmount || isSubmitting} className="w-fit">
+                    {isSubmitting ? "Menyimpan..." : (paymentType === "expense" ? "Simpan Uang Keluar" : "Simpan Uang Masuk")}
                   </Button>
                 </form>
               </CardContent>

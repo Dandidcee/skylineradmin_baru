@@ -40,6 +40,7 @@ import {
   LogOut,
   ClipboardList,
   Wrench,
+  Settings,
   Briefcase,
   UserCircle,
   ImageIcon,
@@ -49,6 +50,7 @@ import {
   Handshake,
   TrendingUp,
   ChevronDown,
+  Key,
 } from "lucide-react";
 import {
   Sidebar,
@@ -70,11 +72,11 @@ const NAV_ITEMS = [
   { to: "/solo-projects", label: "Project Solo", icon: Briefcase, end: false },
   { to: "/templates", label: "Template", icon: Layers, end: false },
   { to: "/documents", label: "Dokumen", icon: FileText, end: false },
+  { to: "/credentials", label: "Kredensial & Akses", icon: Key, end: false },
   { to: "/payment", label: "Payment", icon: Wallet, end: false },
   { to: "/revisions", label: "Revisi", icon: ClipboardList, end: false },
   { to: "/maintenance", label: "Maintenance", icon: Wrench, end: false },
   { to: "/calendar", label: "Kalender", icon: CalendarDays, end: false },
-  { to: "/settings", label: "Pengaturan", icon: Wrench },
 ];
 
 function CollapsibleGroup({ label, defaultOpen = true, children }: { label: string, defaultOpen?: boolean, children: React.ReactNode }) {

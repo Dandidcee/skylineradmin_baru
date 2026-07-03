@@ -19,6 +19,7 @@ import { SettingsPage } from "./pages/settings-page";
 import { RevisionsPage } from "@/pages/revisions-page";
 import { MaintenancePage } from "@/pages/maintenance-page";
 import { SharedDocumentPage } from "@/pages/shared-document-page";
+import { CredentialsPage } from "@/pages/credentials-page";
 
 // Halaman publik (login & shared document) tidak butuh data store
 const PUBLIC_PATHS = ["/login", "/shared-document"];
@@ -83,6 +84,7 @@ export default function App() {
           <Route path="/calendar"            element={<ProtectedRoute><CalendarPage /></ProtectedRoute>} />
           <Route path="/activities"          element={<ProtectedRoute><TodoPage /></ProtectedRoute>} />
           <Route path="/revisions"           element={<ProtectedRoute><RevisionsPage /></ProtectedRoute>} />
+          <Route path="/credentials"         element={<ProtectedRoute><CredentialsPage /></ProtectedRoute>} />
           <Route path="/settings"            element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
         </Routes>
         <Toaster 

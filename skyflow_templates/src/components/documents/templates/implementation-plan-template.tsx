@@ -47,16 +47,16 @@ const INITIAL_PHASES: Phase[] = [
 ];
 
 export function ImplementationPlanTemplate() {
-  const sig = useSignature();
+  const sig = useSignature("/signature.png");
 
   const [docDate, setDocDate] = useState(getTodayDate());
   const [docProj, setDocProj] = useState("N8N-AUTO");
-  const [docNo, setDocNo] = useState(`SFI/${getTodayDate()}/N8N-AUTO`);
+  const [docNo, setDocNo] = useState(`SFI-IMP/${getTodayDate()}/N8N-AUTO`);
   const [clientName] = useState("Nama Klien / Perusahaan");
   const [phases, setPhases] = useState<Phase[]>(INITIAL_PHASES);
   const [isSaving, setIsSaving] = useState(false);
 
-  const preview = `SFI/${docDate || "DD-MM-YYYY"}/${docProj}`;
+  const preview = `SFI-IMP/${docDate || "DD-MM-YYYY"}/${docProj}`;
 
   const handleSaveAndPrint = async () => {
     setIsSaving(true);
@@ -140,7 +140,7 @@ export function ImplementationPlanTemplate() {
         <div className="tpl-toolbar-left">
           <div className="num-builder">
             <label>No. Dokumen:</label>
-            <span style={{ color: "var(--gold)", fontWeight: 700, fontSize: 12 }}>SFI</span>
+            <span style={{ color: "var(--gold)", fontWeight: 700, fontSize: 12 }}>SFI-IMP</span>
             <span className="sep">/</span>
             <input
               type="text"
@@ -190,7 +190,7 @@ export function ImplementationPlanTemplate() {
           <div className="hdr-lines" />
           <div className="hdr-inner">
             <div className="logo-area">
-              <span className="brand-name">SkyFlowID</span>
+              <img src="/LogoMain.png" alt="SkyFlow Logo" className="brand-logo" />
               <div className="brand-tagline">Solusi Kecerdasan Buatan</div>
             </div>
             <div className="doc-label">
@@ -330,10 +330,10 @@ export function ImplementationPlanTemplate() {
           </div>
         </div>
 
-        <div className="page-break" />
+
         {/* BOTTOM: SIGNATURE */}
         <div className="bottom-row" style={{ marginTop: 32 }}>
-          <div className="sig-block">
+          <div className="sig-block" style={{ width: 320, flex: "none" }}>
             <h3>Disetujui Oleh</h3>
             <div className="sig-canvas-wrap" ref={sig.wrapRef}>
               <canvas ref={sig.canvasRef} />
@@ -376,7 +376,7 @@ export function ImplementationPlanTemplate() {
             Dokumen ini bersifat rahasia dan merupakan hak milik internal SkyFlowID.
           </div>
           <div className="footer-brand">
-            <span>SkyFlowID</span>
+            <img src="/LogoMain.png" alt="SkyFlow" className="footer-logo" />
           </div>
         </div>
       </div>

@@ -72,21 +72,32 @@
     margin: 0;
   }
 
-  /* Sembunyikan semua, lalu tampilkan hanya area dokumen */
-  body * {
-    visibility: hidden;
+  /* Sembunyikan elemen UI aplikasi */
+  header, [data-sidebar="sidebar"], .no-print {
+    display: none !important;
   }
-  .skyflow-doc,
-  .skyflow-doc * {
-    visibility: visible;
+
+  /* Reset pembungkus layout agar tidak memotong halaman (pagination fix) */
+  html, body, #root, #root > div, main, main > div, .flex-1 {
+    display: block !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    position: static !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
+
+  /* Hilangkan efek scrollbar & pastikan dokumen merentang penuh */
+  body {
+    background: white;
+  }
+  
   .skyflow-doc {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    padding: 0;
-    margin: 0;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
   }
 
   /* Pastikan warna (header gelap, badge) ikut tercetak */

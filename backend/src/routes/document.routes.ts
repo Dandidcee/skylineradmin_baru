@@ -17,6 +17,13 @@ router.post('/', async (req, res) => {
   const data = req.body; 
   
   try {
+    const existingDoc = await prisma.document.findFirst({
+      where: { title: data.title, template: data.template }
+    });
+    if (existingDoc) {
+      return res.status(409).json({ error: `Dokumen dengan No/Judul ${data.title} dan template ${data.template} sudah ada!` });
+    }
+
     const { amount, ...documentData } = data;
     const doc = await prisma.document.create({ 
       data: {

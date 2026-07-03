@@ -14,6 +14,9 @@ router.get('/documents/:id', async (req, res) => {
         },
         project: {
           select: { name: true }
+        },
+        creator: {
+          select: { name: true }
         }
       }
     });
