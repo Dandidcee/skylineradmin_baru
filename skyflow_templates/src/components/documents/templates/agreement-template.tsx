@@ -181,8 +181,7 @@ export function AgreementTemplate() {
     }
   }, [selectedClientId, clients]);
 
-  const [docDate, setDocDate] = useState(getTodayDate());
-  const [docProj, setDocProj] = useState("001");
+  const [docProj, setDocProj] = useState("001"); // eslint-disable-line @typescript-eslint/no-unused-vars
   const refFromUrl = new URLSearchParams(window.location.search).get('ref');
 
   const [isSaving, setIsSaving] = useState(false);

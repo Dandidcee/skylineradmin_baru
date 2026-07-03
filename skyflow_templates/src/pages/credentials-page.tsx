@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Search, Plus, Key, Globe, User, Eye, EyeOff, Copy, CheckCircle2, Trash2, Pencil } from "lucide-react";
+import { Search, Plus, Key, Globe, User, Eye, EyeOff, Copy, Trash2, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { getCredentials, createCredential, updateCredential, deleteCredential, type Credential } from "@/services/credential-service";
 import { getClients } from "@/services/client-service";
@@ -112,8 +112,8 @@ export function CredentialsPage() {
         username,
         password,
         notes,
-        clientId: clientId || null,
-        projectId: projectId || null,
+        clientId: clientId || undefined,
+        projectId: projectId || undefined,
       };
       
       if (editingId) {

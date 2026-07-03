@@ -40,7 +40,6 @@ import {
   LogOut,
   ClipboardList,
   Wrench,
-  Settings,
   Briefcase,
   UserCircle,
   ImageIcon,
