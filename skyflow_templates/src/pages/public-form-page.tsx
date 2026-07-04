@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { formService } from "@/services/form-service";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Loader2, ArrowRight, ArrowLeft, CheckCircle2, User, MapPin, Sparkles, Phone, MessageCircle, ChevronDown, Search } from "lucide-react";
+import { Loader2, ArrowRight, ArrowLeft, User, MapPin, Sparkles, Phone, ChevronDown, Search } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Popover, PopoverTrigger } from "@/components/ui/popover";
 import {
@@ -227,12 +227,6 @@ export function PublicFormPage() {
       setIsSubmitting(false);
     }
   };
-  const steps = [
-    { id: 1, title: "Informasi Dasar", icon: User },
-    { id: 2, title: "Lokasi & Alamat", icon: MapPin },
-    { id: 3, title: "Preferensi", icon: Sparkles }
-  ];
-
   return (
     <div className="min-h-screen bg-background flex flex-col md:flex-row">
       
