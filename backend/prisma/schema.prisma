@@ -211,3 +211,20 @@ model Credential {
   
   createdAt DateTime @default(now())
 }
+
+model SurveyResponse {
+  id               String   @id @default(uuid())
+  name             String
+  province         String
+  city             String
+  district         String
+  fullAddress      String
+  phone            String
+  needsClass       String
+  interestLevel    String?
+  joinCommunity    Boolean
+  communityChannel String?
+  gender           String?
+  age              Int?
+  createdAt        DateTime @default(now())
+}
