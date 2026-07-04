@@ -30,13 +30,16 @@ const AVAILABLE_PERMISSIONS = [
   { id: "DASHBOARD", label: "Dashboard" },
   { id: "CLIENTS", label: "List Client" },
   { id: "PROJECTS", label: "Projects" },
+  { id: "SOLO_PROJECTS", label: "Project Solo" },
   { id: "TEMPLATE", label: "Template" },
   { id: "DOKUMEN", label: "Dokumen" },
+  { id: "CREDENTIALS", label: "Kredensial & Akses" },
   { id: "PAYMENT", label: "Payment" },
   { id: "REVISI", label: "Revisi" },
   { id: "MAINTENANCE", label: "Maintenance" },
   { id: "KALENDER", label: "Kalender" },
   { id: "AKTIVITAS", label: "Aktivitas" },
+  { id: "FORM", label: "Form Survey" },
 ];
 
 export function SettingsPage() {

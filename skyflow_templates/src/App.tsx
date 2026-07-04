@@ -20,9 +20,10 @@ import { RevisionsPage } from "@/pages/revisions-page";
 import { MaintenancePage } from "@/pages/maintenance-page";
 import { SharedDocumentPage } from "@/pages/shared-document-page";
 import { CredentialsPage } from "@/pages/credentials-page";
-
+import { PublicFormPage } from "@/pages/public-form-page";
+import { FormResponsesPage } from "@/pages/form-responses-page";
 // Halaman publik (login & shared document) tidak butuh data store
-const PUBLIC_PATHS = ["/login", "/shared-document"];
+const PUBLIC_PATHS = ["/login", "/shared-document", "/form"];
 
 /**
  * Provider wrapper yang hanya aktif saat user sudah login.
@@ -71,6 +72,7 @@ export default function App() {
           {/* Public Routes */}
           <Route path="/login"               element={<LoginPage />} />
           <Route path="/shared-document/:id" element={<SharedDocumentPage />} />
+          <Route path="/form"                element={<PublicFormPage />} />
 
           {/* Protected Routes */}
           <Route path="/"                    element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
@@ -85,6 +87,7 @@ export default function App() {
           <Route path="/activities"          element={<ProtectedRoute><TodoPage /></ProtectedRoute>} />
           <Route path="/revisions"           element={<ProtectedRoute><RevisionsPage /></ProtectedRoute>} />
           <Route path="/credentials"         element={<ProtectedRoute><CredentialsPage /></ProtectedRoute>} />
+          <Route path="/forms"               element={<ProtectedRoute><FormResponsesPage /></ProtectedRoute>} />
           <Route path="/settings"            element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
         </Routes>
         <Toaster 

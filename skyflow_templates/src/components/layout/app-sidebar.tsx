@@ -76,6 +76,7 @@ const NAV_ITEMS = [
   { to: "/revisions", label: "Revisi", icon: ClipboardList, end: false },
   { to: "/maintenance", label: "Maintenance", icon: Wrench, end: false },
   { to: "/calendar", label: "Kalender", icon: CalendarDays, end: false },
+  { to: "/forms", label: "Form Survey", icon: FormInput, end: false },
 ];
 
 function CollapsibleGroup({ label, defaultOpen = true, children }: { label: string, defaultOpen?: boolean, children: React.ReactNode }) {
@@ -180,13 +181,15 @@ export function AppSidebar() {
       "Dokumen": "DOKUMEN",
       "Template": "TEMPLATE",
       "Projects": "PROJECTS",
-      "Project Solo": "PROJECTS",
+      "Project Solo": "SOLO_PROJECTS",
       "List Client": "CLIENTS",
       "Payment": "PAYMENT",
       "Maintenance": "MAINTENANCE",
       "Revisi": "REVISI",
       "Kalender": "KALENDER",
       "Aktivitas": "AKTIVITAS",
+      "Kredensial & Akses": "CREDENTIALS",
+      "Form Survey": "FORM",
     };
     
     const requiredPerm = permissionMap[item.label];
