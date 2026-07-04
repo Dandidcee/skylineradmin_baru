@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { formService } from "@/services/form-service";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Loader2, ArrowRight, ArrowLeft, User, MapPin, Sparkles, Phone, ChevronDown, Search } from "lucide-react";
+import { Loader2, ArrowRight, ArrowLeft, Phone, ChevronDown, Search } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Popover, PopoverTrigger } from "@/components/ui/popover";
 import {
