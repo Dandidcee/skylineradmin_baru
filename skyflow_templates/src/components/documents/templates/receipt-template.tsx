@@ -46,6 +46,7 @@ export function ReceiptTemplate() {
 
   const [clientCompany, setClientCompany] = useState("Nama Klien / Perusahaan");
   const [clientDetail, setClientDetail] = useState("Alamat Klien Baris 1, Kota, Kode Pos, Indonesia · email@klien.com · +62 8xx-xxxx-xxxx");
+  const [signeeName, setSigneeName] = useState("Dandi Cahyaman");
 
   // Nominal states
   const [jumlahDibayar, setJumlahDibayar] = useState("Rp 0");
@@ -97,7 +98,7 @@ export function ReceiptTemplate() {
       const snap = createDocumentSnapshot(recNo);
       await generateDocument({
         title: recNo,
-        template: "Payment Receipt",
+        template: "Receipt",
         projectId: selectedProjectId || undefined,
         clientId: selectedClientId || undefined,
         amount: saveAmount.toString(),
@@ -120,9 +121,9 @@ export function ReceiptTemplate() {
     <div className="skyflow-doc">
       {/* TOOLBAR */}
       <div className="tpl-toolbar">
-        <div className="tpl-toolbar-left">
+        <div className="tpl-toolbar-left" style={{ display: "flex", gap: "12px", alignItems: "center" }}>
           <div className="num-builder">
-            <label>No. Bukti:</label>
+            <label>No. Dokumen:</label>
             <span style={{ color: "var(--gold)", fontWeight: 700, fontSize: 12 }}>BYR</span>
             <span className="sep">/</span>
             <input
@@ -150,6 +151,16 @@ export function ReceiptTemplate() {
             >
               Terapkan
             </button>
+          </div>
+          <div className="num-builder no-print">
+            <label>Penanggung Jawab:</label>
+            <input
+              type="text"
+              style={{ width: 140 }}
+              value={signeeName}
+              placeholder="Nama Penanggung Jawab"
+              onChange={(e) => setSigneeName(e.target.value)}
+            />
           </div>
         </div>
         <div className="tpl-toolbar-right">
@@ -516,8 +527,9 @@ export function ReceiptTemplate() {
                   style={{ fontSize: 13, fontWeight: 600, color: "var(--ink)", marginTop: 3 }}
                   contentEditable
                   suppressContentEditableWarning
+                  onBlur={(e) => setSigneeName(e.currentTarget.textContent || "")}
                 >
-                  Nama Penanda Tangan
+                  {signeeName}
                 </div>
                 <div
                   style={{ fontSize: 12, color: "var(--ink3)", marginTop: 3 }}

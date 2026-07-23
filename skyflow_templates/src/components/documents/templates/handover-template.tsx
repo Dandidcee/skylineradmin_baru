@@ -20,11 +20,37 @@ export function HandoverTemplate() {
   const [selectedClientId, setSelectedClientId] = useState("");
   const [selectedProjectId, setSelectedProjectId] = useState("");
 
+  const [providerName, setProviderName] = useState("Dandi Cahyaman");
+  const [providerRole, setProviderRole] = useState("Penyedia Layanan (SkyFlowID)");
+
   const [clientCompany, setClientCompany] = useState("Nama Klien / Perusahaan");
   const [clientName, setClientName] = useState("Nama Klien");
   const [clientDetail, setClientDetail] = useState("Alamat Klien Baris 1, Kota, Kode Pos, Indonesia · email@klien.com · +62 8xx-xxxx-xxxx");
   const [projectName, setProjectName] = useState("Nama Project");
 
+  const [teamMembers, setTeamMembers] = useState([
+    { id: "tm-1", name: "Dandi Cahyaman", role: "Lead N8N Automation Developer" },
+    { id: "tm-2", name: "Tim SkyFlowID", role: "Quality Assurance & Deployment" },
+  ]);
+
+  const addTeamMember = () => {
+    setTeamMembers((prev) => [
+      ...prev,
+      { id: String(Date.now()), name: "Nama Anggota Tim", role: "Peran / Jenis Pekerjaan" },
+    ]);
+  };
+
+  const removeTeamMember = (id: string) => {
+    setTeamMembers((prev) => prev.filter((m) => m.id !== id));
+  };
+
+  const updateTeamMember = (id: string, patch: Partial<{ name: string; role: string }>) => {
+    setTeamMembers((prev) =>
+      prev.map((m) => (m.id === id ? { ...m, ...patch } : m))
+    );
+  };
+
+  const refFromUrl = new URLSearchParams(window.location.search).get("ref");
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
@@ -86,7 +112,7 @@ export function HandoverTemplate() {
     <div className="skyflow-doc">
       {/* TOOLBAR */}
       <div className="tpl-toolbar">
-        <div className="tpl-toolbar-left">
+        <div className="tpl-toolbar-left" style={{ display: "flex", gap: "12px", alignItems: "center" }}>
           <div className="num-builder">
             <label>No. Dokumen:</label>
             <span style={{ color: "var(--gold)", fontWeight: 700, fontSize: 12 }}>BAST</span>
@@ -116,6 +142,16 @@ export function HandoverTemplate() {
             >
               Terapkan
             </button>
+          </div>
+          <div className="num-builder no-print">
+            <label>Penanggung Jawab:</label>
+            <input
+              type="text"
+              style={{ width: 140 }}
+              value={providerName}
+              placeholder="Nama Penanggung Jawab"
+              onChange={(e) => setProviderName(e.target.value)}
+            />
           </div>
         </div>
         <div className="tpl-toolbar-right">
@@ -203,7 +239,7 @@ export function HandoverTemplate() {
           <div>
             <div className="meta-lbl">No. Invoice / Kontrak</div>
             <div className="meta-val" contentEditable suppressContentEditableWarning>
-              SFI-INV/{getTodayDate()}/001
+              {refFromUrl || `SFI-INV/${getTodayDate()}/001`}
             </div>
           </div>
         </div>
@@ -248,7 +284,7 @@ export function HandoverTemplate() {
             telah dilakukan serah terima pekerjaan pengembangan sistem/aplikasi dengan rincian sebagai berikut:
           </p>
           
-          <table style={{ marginBottom: 24 }}>
+          <table style={{ marginBottom: 20 }}>
             <tbody>
               <tr>
                 <td style={{ width: "30%", fontWeight: 600 }}>Nama Proyek</td>
@@ -262,6 +298,59 @@ export function HandoverTemplate() {
               </tr>
             </tbody>
           </table>
+
+          {/* TEAM MEMBERS SECTION */}
+          <div style={{ marginBottom: 20, padding: "12px", border: "1px solid var(--ink5)", borderRadius: 8, background: "var(--ink6)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+              <strong style={{ fontSize: 13, color: "var(--ink)" }}>Tim Pelaksana Proyek:</strong>
+              <button
+                className="tpl-btn tpl-btn-ghost no-print"
+                style={{ fontSize: 11, padding: "2px 8px" }}
+                onClick={addTeamMember}
+              >
+                ＋ Tambah Anggota Tim
+              </button>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "8px" }}>
+              {teamMembers.map((m) => (
+                <div
+                  key={m.id}
+                  style={{
+                    padding: "6px 10px",
+                    border: "1px solid var(--ink5)",
+                    borderRadius: 6,
+                    background: "white",
+                    position: "relative"
+                  }}
+                >
+                  <button
+                    className="del-row-btn no-print"
+                    style={{ position: "absolute", top: 3, right: 6, fontSize: 10 }}
+                    title="Hapus anggota"
+                    onClick={() => removeTeamMember(m.id)}
+                  >
+                    ✕
+                  </button>
+                  <div
+                    style={{ fontWeight: 600, fontSize: 12, color: "var(--ink)", paddingRight: 14 }}
+                    contentEditable
+                    suppressContentEditableWarning
+                    onBlur={(e) => updateTeamMember(m.id, { name: e.currentTarget.textContent || "" })}
+                  >
+                    {m.name}
+                  </div>
+                  <div
+                    style={{ fontSize: 10, color: "var(--ink3)", marginTop: 1 }}
+                    contentEditable
+                    suppressContentEditableWarning
+                    onBlur={(e) => updateTeamMember(m.id, { role: e.currentTarget.textContent || "" })}
+                  >
+                    {m.role}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
 
           <p style={{ marginBottom: 16 }}>
             Pihak Pertama telah menyelesaikan pekerjaan sesuai dengan spesifikasi dan ruang lingkup yang telah disepakati bersama. 
@@ -308,15 +397,17 @@ export function HandoverTemplate() {
                 style={{ fontSize: 14, fontWeight: 600, color: "var(--ink)", marginTop: 3 }}
                 contentEditable
                 suppressContentEditableWarning
+                onBlur={(e) => setProviderName(e.currentTarget.textContent || "")}
               >
-                SkyFlowID
+                {providerName}
               </div>
               <div
                 style={{ fontSize: 12, color: "var(--ink3)", marginTop: 3 }}
                 contentEditable
                 suppressContentEditableWarning
+                onBlur={(e) => setProviderRole(e.currentTarget.textContent || "")}
               >
-                Penyedia Layanan
+                {providerRole}
               </div>
             </div>
           </div>

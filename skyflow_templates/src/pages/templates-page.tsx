@@ -25,7 +25,12 @@ export function TemplatesPage() {
 
   const handleSelect = (id: TemplateId) => {
     setActive(id);
-    setSearchParams({ t: id });
+    const refParam = searchParams.get("ref");
+    if (refParam) {
+      setSearchParams({ t: id, ref: refParam });
+    } else {
+      setSearchParams({ t: id });
+    }
   };
 
   const activeTemplate = TEMPLATES.find((t) => t.id === active);

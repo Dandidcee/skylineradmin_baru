@@ -74,11 +74,21 @@ export function createDocumentSnapshot(title: string): { fileUrl: string, sizeKb
   const paper = document.querySelector('.paper');
   if (!paper) return null;
 
-  // Hanya ambil stylesheet link (bukan style tag yang mungkin berisi dark mode variables)
+  // Copy only relevant document & print styles to avoid bloat (reduces snapshot payload by 99%)
   let headStyles = '';
   const styleTags = document.querySelectorAll('style, link[rel="stylesheet"]');
   styleTags.forEach(tag => {
-    headStyles += tag.outerHTML + '\n';
+    const text = tag.textContent || '';
+    if (
+      tag.tagName.toLowerCase() === 'link' || 
+      text.includes('.skyflow-doc') || 
+      text.includes('.paper') || 
+      text.includes('@media print') || 
+      text.includes('editable-inline') ||
+      text.includes('@font-face')
+    ) {
+      headStyles += tag.outerHTML + '\n';
+    }
   });
   
   const clone = paper.cloneNode(true) as HTMLElement;

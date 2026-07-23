@@ -52,6 +52,29 @@ export function ImplementationPlanTemplate() {
   const [docDate, setDocDate] = useState(getTodayDate());
   const [docProj, setDocProj] = useState("N8N-AUTO");
   const [docNo, setDocNo] = useState(`SFI-IMP/${getTodayDate()}/N8N-AUTO`);
+  const [personInCharge, setPersonInCharge] = useState("Dandi Cahyaman");
+  const [personRole, setPersonRole] = useState("Project Manager");
+  const [teamMembers, setTeamMembers] = useState([
+    { id: "tm-1", name: "Dandi Cahyaman", role: "Lead N8N Automation Developer" },
+    { id: "tm-2", name: "Tim SkyFlowID", role: "Integration & API Specialist" },
+  ]);
+
+  const addTeamMember = () => {
+    setTeamMembers((prev) => [
+      ...prev,
+      { id: String(Date.now()), name: "Nama Anggota Tim", role: "Peran / Jenis Pekerjaan" },
+    ]);
+  };
+
+  const removeTeamMember = (id: string) => {
+    setTeamMembers((prev) => prev.filter((m) => m.id !== id));
+  };
+
+  const updateTeamMember = (id: string, patch: Partial<{ name: string; role: string }>) => {
+    setTeamMembers((prev) =>
+      prev.map((m) => (m.id === id ? { ...m, ...patch } : m))
+    );
+  };
   const [clientName] = useState("Nama Klien / Perusahaan");
   const [phases, setPhases] = useState<Phase[]>(INITIAL_PHASES);
   const [isSaving, setIsSaving] = useState(false);
@@ -137,7 +160,7 @@ export function ImplementationPlanTemplate() {
     <div className="skyflow-doc">
       {/* TOOLBAR */}
       <div className="tpl-toolbar no-print">
-        <div className="tpl-toolbar-left">
+        <div className="tpl-toolbar-left" style={{ display: "flex", gap: "12px", alignItems: "center" }}>
           <div className="num-builder">
             <label>No. Dokumen:</label>
             <span style={{ color: "var(--gold)", fontWeight: 700, fontSize: 12 }}>SFI-IMP</span>
@@ -167,6 +190,16 @@ export function ImplementationPlanTemplate() {
             >
               Terapkan
             </button>
+          </div>
+          <div className="num-builder no-print">
+            <label>Penanggung Jawab:</label>
+            <input
+              type="text"
+              style={{ width: 140 }}
+              value={personInCharge}
+              placeholder="Nama Penanggung Jawab"
+              onChange={(e) => setPersonInCharge(e.target.value)}
+            />
           </div>
         </div>
         <div className="tpl-toolbar-right">
@@ -218,8 +251,13 @@ export function ImplementationPlanTemplate() {
           </div>
           <div>
             <div className="meta-lbl">Penanggung Jawab</div>
-            <div className="meta-val" contentEditable suppressContentEditableWarning>
-              Tim Developer SkyFlowID
+            <div
+              className="meta-val"
+              contentEditable
+              suppressContentEditableWarning
+              onBlur={(e) => setPersonInCharge(e.currentTarget.textContent || "")}
+            >
+              {personInCharge}
             </div>
           </div>
           <div>
@@ -237,6 +275,61 @@ export function ImplementationPlanTemplate() {
             <div className="detail" style={{ maxWidth: "100%", lineHeight: 1.6 }} contentEditable suppressContentEditableWarning>
               Dokumen ini menguraikan tahapan implementasi sistem automasi menggunakan platform N8N. 
               Fokus utama meliputi integrasi antar aplikasi, pengelolaan alur data otomatis, serta optimasi proses bisnis sesuai dengan kebutuhan operasional Klien.
+            </div>
+          </div>
+        </div>
+
+        {/* TEAM MEMBERS SECTION */}
+        <div className="addr-row" style={{ marginTop: 20 }}>
+          <div className="addr-blk" style={{ flex: "1" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <h3>Tim Pelaksana & Penanggung Jawab Proyek</h3>
+              <button
+                className="tpl-btn tpl-btn-ghost no-print"
+                style={{ fontSize: 11, padding: "3px 10px" }}
+                onClick={addTeamMember}
+              >
+                ＋ Tambah Anggota Tim
+              </button>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "10px" }}>
+              {teamMembers.map((m) => (
+                <div
+                  key={m.id}
+                  style={{
+                    padding: "8px 12px",
+                    border: "1px solid var(--ink5)",
+                    borderRadius: 6,
+                    background: "var(--ink6)",
+                    position: "relative"
+                  }}
+                >
+                  <button
+                    className="del-row-btn no-print"
+                    style={{ position: "absolute", top: 4, right: 6, fontSize: 10 }}
+                    title="Hapus anggota"
+                    onClick={() => removeTeamMember(m.id)}
+                  >
+                    ✕
+                  </button>
+                  <div
+                    style={{ fontWeight: 600, fontSize: 13, color: "var(--ink)", paddingRight: 16 }}
+                    contentEditable
+                    suppressContentEditableWarning
+                    onBlur={(e) => updateTeamMember(m.id, { name: e.currentTarget.textContent || "" })}
+                  >
+                    {m.name}
+                  </div>
+                  <div
+                    style={{ fontSize: 11, color: "var(--ink3)", marginTop: 2 }}
+                    contentEditable
+                    suppressContentEditableWarning
+                    onBlur={(e) => updateTeamMember(m.id, { role: e.currentTarget.textContent || "" })}
+                  >
+                    {m.role}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -351,13 +444,21 @@ export function ImplementationPlanTemplate() {
               </button>
             </div>
             <div className="sig-name-wrap">
-              <div className="sig-name-lbl">Project Manager</div>
+              <div
+                className="sig-name-lbl"
+                contentEditable
+                suppressContentEditableWarning
+                onBlur={(e) => setPersonRole(e.currentTarget.textContent || "")}
+              >
+                {personRole}
+              </div>
               <div
                 style={{ fontSize: 14, fontWeight: 600, color: "var(--ink)", marginTop: 3 }}
                 contentEditable
                 suppressContentEditableWarning
+                onBlur={(e) => setPersonInCharge(e.currentTarget.textContent || "")}
               >
-                Dandi Cahyaman
+                {personInCharge}
               </div>
               <div
                 style={{ fontSize: 12, color: "var(--ink3)", marginTop: 3 }}

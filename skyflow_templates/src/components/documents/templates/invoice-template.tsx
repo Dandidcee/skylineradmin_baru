@@ -75,10 +75,10 @@ export function InvoiceTemplate() {
   const [selectedClientId, setSelectedClientId] = useState("");
   const [projects, setProjects] = useState<any[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState("");
-  const [isSaving, setIsSaving] = useState(false);
-
   const [clientCompany, setClientCompany] = useState("Nama Klien / Perusahaan");
   const [clientDetail, setClientDetail] = useState("Alamat Klien Baris 1, Kota, Kode Pos, Indonesia · email@klien.com · +62 8xx-xxxx-xxxx");
+  const [signeeName, setSigneeName] = useState("Dandi Cahyaman");
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     getClients().then(setClients);
@@ -158,7 +158,7 @@ export function InvoiceTemplate() {
     <div className="skyflow-doc">
       {/* TOOLBAR */}
       <div className="tpl-toolbar">
-        <div className="tpl-toolbar-left">
+        <div className="tpl-toolbar-left" style={{ display: "flex", gap: "12px", alignItems: "center" }}>
           <div className="num-builder">
             <label>No. Invoice:</label>
             <span style={{ color: "var(--gold)", fontWeight: 700, fontSize: 12 }}>SFI-INV</span>
@@ -188,6 +188,16 @@ export function InvoiceTemplate() {
             >
               Terapkan
             </button>
+          </div>
+          <div className="num-builder no-print">
+            <label>Penanggung Jawab:</label>
+            <input
+              type="text"
+              style={{ width: 140 }}
+              value={signeeName}
+              placeholder="Nama Penanggung Jawab"
+              onChange={(e) => setSigneeName(e.target.value)}
+            />
           </div>
 
           <div className={`status-toggle${status === "paid" ? " is-paid" : ""}`}>
@@ -457,8 +467,9 @@ export function InvoiceTemplate() {
                 style={{ fontSize: 14, fontWeight: 600, color: "var(--ink)", marginTop: 3 }}
                 contentEditable
                 suppressContentEditableWarning
+                onBlur={(e) => setSigneeName(e.currentTarget.textContent || "")}
               >
-                Nama Penanda Tangan
+                {signeeName}
               </div>
               <div
                 style={{ fontSize: 12, color: "var(--ink3)", marginTop: 3 }}
