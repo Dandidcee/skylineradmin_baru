@@ -726,6 +726,7 @@
   line-height: 1.8;
   color: var(--ink2);
   margin-bottom: 24px;
+  text-align: justify;
 }
 .skyflow-doc .party-box {
   display: grid;
@@ -756,6 +757,7 @@
   font-weight: 400;
   color: var(--ink2);
   line-height: 1.6;
+  text-align: justify;
 }
 .skyflow-doc .section-title {
   font-size: 20px;
@@ -768,6 +770,7 @@
 }
 .skyflow-doc .article {
   margin-bottom: 24px;
+  text-align: justify;
 }
 .skyflow-doc .article h4 {
   font-size: 11px;
@@ -779,10 +782,12 @@
 }
 .skyflow-doc .article p,
 .skyflow-doc .article ul,
-.skyflow-doc .article ol {
+.skyflow-doc .article ol,
+.skyflow-doc .article li {
   font-size: 13px;
   line-height: 1.8;
   color: var(--ink2);
+  text-align: justify;
 }
 .skyflow-doc .article ul,
 .skyflow-doc .article ol {

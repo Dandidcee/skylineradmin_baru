@@ -435,7 +435,7 @@ export function AgreementTemplate() {
           <div className="party-box" style={{ flexDirection: "column", gap: "16px" }}>
             <div className="party-blk" style={{ width: "100%" }}>
               <h3>1. PENYEDIA JASA / PIHAK PERTAMA</h3>
-              <div className="detail" style={{ marginTop: "8px", lineHeight: "1.6" }}>
+              <div className="detail" style={{ marginTop: "8px", lineHeight: "1.6", textAlign: "justify" }}>
                 <strong>Nama:</strong>{" "}
                 <span className="editable-inline" contentEditable suppressContentEditableWarning onBlur={(e) => setProviderName(e.currentTarget.textContent || "")}>{providerName}</span>, pekerjaan/profesi:{" "}
                 <span className="editable-inline" contentEditable suppressContentEditableWarning onBlur={(e) => setProviderTitle(e.currentTarget.textContent || "")}>{providerTitle}</span> — dalam hal ini bertindak untuk dan atas nama diri sendiri (perorangan), beralamat di{" "}
@@ -446,7 +446,7 @@ export function AgreementTemplate() {
 
             <div className="party-blk" style={{ width: "100%" }}>
               <h3>2. KLIEN / PIHAK KEDUA</h3>
-              <div className="detail" style={{ marginTop: "8px", lineHeight: "1.6" }}>
+              <div className="detail" style={{ marginTop: "8px", lineHeight: "1.6", textAlign: "justify" }}>
                 <strong>Nama:</strong>{" "}
                 <span className="editable-inline" contentEditable suppressContentEditableWarning onBlur={(e) => setClientCompany(e.currentTarget.textContent || "")}>{clientCompany}</span> — dalam hal ini bertindak untuk dan atas nama{" "}
                 <span className="editable-inline" contentEditable suppressContentEditableWarning onBlur={(e) => setClientRole(e.currentTarget.textContent || "")}>{clientRole}</span>, berkedudukan di{" "}
