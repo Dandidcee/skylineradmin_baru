@@ -402,7 +402,7 @@ export function AgreementTemplate() {
               <div className="brand-tagline">Solusi Kecerdasan Buatan</div>
             </div>
             <div className="doc-label">
-              <h1 className="sm">PERJANJIAN KERJA SAMA PENGEMBANGAN SISTEM</h1>
+              <h1 className="sm long-title">PERJANJIAN KERJA SAMA PENGEMBANGAN SISTEM</h1>
               <div className="doc-sub" contentEditable suppressContentEditableWarning>
                 Nomor: SFI-AGR/{getTodayDate()}/001
               </div>
