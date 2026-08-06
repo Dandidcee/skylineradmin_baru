@@ -29,7 +29,7 @@ const PAY_DETAILS: Record<
 };
 
 export function ReceiptTemplate() {
-  const sig = useSignature("/signature.png");
+  const { wrapRef: wrapRef1, canvasRef: canvasRef1, hasSignature: hasSig1, clear: clearSig1 } = useSignature("/signature.png");
 
   const [recDate, setRecDate] = useState(getTodayDate());
   const [recSeq, setRecSeq] = useState("001");
@@ -70,10 +70,13 @@ export function ReceiptTemplate() {
       if (client) {
         const cName = client.name;
         const cComp = client.company;
-        if (cName && cComp) setClientCompany(`${cName} / ${cComp}`);
-        else if (cName) setClientCompany(cName);
-        else if (cComp) setClientCompany(cComp);
-        else setClientCompany("Nama Klien / Perusahaan");
+        const _t = setTimeout(() => {
+          if (cName && cComp) setClientCompany(`${cName} / ${cComp}`);
+          else if (cName) setClientCompany(cName);
+          else if (cComp) setClientCompany(cComp);
+          else setClientCompany("Nama Klien / Perusahaan");
+        }, 0);
+        return () => clearTimeout(_t);
         const address = client.address || "-";
         const phone = client.phone || "-";
         setClientDetail(`${address} · ${phone}`);
@@ -98,7 +101,7 @@ export function ReceiptTemplate() {
       const snap = createDocumentSnapshot(recNo);
       await generateDocument({
         title: recNo,
-        template: "Receipt",
+        template: "Payment Receipt",
         projectId: selectedProjectId || undefined,
         clientId: selectedClientId || undefined,
         amount: saveAmount.toString(),
@@ -111,7 +114,12 @@ export function ReceiptTemplate() {
         toastManager.success({ title: "Berhasil", description: "Bukti Pembayaran disimpan." });
       }
     } catch(err: any) {
-      toastManager.error({ title: "Gagal", description: err.message || "Gagal menyimpan dokumen." });
+      if (isPrint) {
+        window.print();
+        toastManager.error({ title: "Gagal Menyimpan", description: err.message || "Gagal menyimpan ke sistem, tapi dokumen tetap dicetak." });
+      } else {
+        toastManager.error({ title: "Gagal", description: err.message || "Gagal menyimpan dokumen." });
+      }
     } finally {
       setIsSaving(false);
     }
@@ -506,9 +514,9 @@ export function ReceiptTemplate() {
         <div className="bottom-row" style={{ paddingTop: 40 }}>
           <div className="sig-block" style={{ width: 260, flex: "none" }}>
             <h3>Disetujui Oleh</h3>
-              <div className="sig-canvas-wrap" ref={sig.wrapRef} style={{ height: 90 }}>
-                <canvas ref={sig.canvasRef} />
-                {!sig.hasSignature && (
+              <div className="sig-canvas-wrap" ref={wrapRef1} style={{ height: 90 }}>
+                <canvas ref={canvasRef1} />
+                {!hasSig1 && (
                   <div className="sig-hint">
                     Tanda tangani di sini
                     <br />
@@ -517,7 +525,7 @@ export function ReceiptTemplate() {
                 )}
               </div>
               <div className="sig-ctrl no-print">
-                <button className="sig-btn" onClick={sig.clear}>
+                <button className="sig-btn" onClick={clearSig1}>
                   Hapus
                 </button>
               </div>

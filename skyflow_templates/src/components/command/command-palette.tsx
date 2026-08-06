@@ -99,11 +99,15 @@ export function CommandPalette() {
 
   // reset state saat dibuka / query berubah
   useEffect(() => {
-    setActive(0);
+    const t = setTimeout(() => setActive(0), 0);
+    return () => clearTimeout(t);
   }, [query, open]);
 
   useEffect(() => {
-    if (!open) setQuery("");
+    if (!open) {
+      const t = setTimeout(() => setQuery(""), 0);
+      return () => clearTimeout(t);
+    }
   }, [open]);
 
   const onKeyDown = (e: React.KeyboardEvent) => {

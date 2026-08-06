@@ -13,7 +13,7 @@ import { fetchApi } from "./api";
 export async function listTodos(): Promise<TodoItem[]> {
   try {
     return await fetchApi('/todos');
-  } catch (error) {
+  } catch {
     return [];
   }
 }

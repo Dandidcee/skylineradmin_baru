@@ -104,7 +104,7 @@ export function FormResponsesPage() {
     }
   };
 
-  useEffect(() => { fetchResponses(); }, []);
+  useEffect(() => { const _t = setTimeout(() => { fetchResponses(); }, 0); return () => clearTimeout(_t); }, []);
 
   const handleDelete = async (id: string) => {
     try {

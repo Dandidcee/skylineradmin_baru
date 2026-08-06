@@ -12,7 +12,16 @@ const INITIAL_TABLE: TableData = {
   rows: [],
 };
 
-export async function getClients(): Promise<any[]> {
+type ApiClient = {
+  id: string;
+  name?: string;
+  company?: string;
+  address?: string;
+  phone?: string;
+  creator?: { name: string };
+};
+
+export async function getClients(): Promise<ApiClient[]> {
   try {
     return await fetchApi('/clients');
   } catch (error) {
@@ -26,7 +35,7 @@ export async function getClientTable(): Promise<TableData> {
     const clients = await fetchApi('/clients');
     return {
       columns: INITIAL_TABLE.columns,
-      rows: clients.map((c: any) => ({
+      rows: clients.map((c: ApiClient) => ({
         id: c.id,
         cells: {
           name: c.name || '',
@@ -47,14 +56,14 @@ export async function saveClientTable(data: TableData): Promise<TableData> {
   return data;
 }
 
-export async function createClient(data: any): Promise<any> {
+export async function createClient(data: Partial<ApiClient>): Promise<ApiClient> {
   return await fetchApi('/clients', {
     method: 'POST',
     body: JSON.stringify(data),
   });
 }
 
-export async function updateClient(id: string, data: any): Promise<any> {
+export async function updateClient(id: string, data: Partial<ApiClient>): Promise<ApiClient> {
   return await fetchApi(`/clients/${id}`, {
     method: 'PUT',
     body: JSON.stringify(data),

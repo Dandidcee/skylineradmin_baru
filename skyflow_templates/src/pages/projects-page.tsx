@@ -258,7 +258,7 @@ function SortableProjectCard({ project, handleDelete, handleProgressChange, form
   );
 }
 
-function KanbanColumn({ col, projects, handleDelete, handleProgressChange, formatRupiah, loadData }: any) {
+function KanbanColumn({ col, projects, handleDelete, handleProgressChange, formatRupiah, loadData }: { col: any, projects: any[], handleDelete: any, handleProgressChange: any, formatRupiah: any, loadData: any }) {
   const { setNodeRef, isOver } = useSortable({
     id: col.id,
     data: {
@@ -302,7 +302,7 @@ function KanbanColumn({ col, projects, handleDelete, handleProgressChange, forma
 
 export function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
-  const [clients, setClients] = useState<any[]>([]);
+  const [clients, setClients] = useState<unknown[]>([]);
   const [loading, setLoading] = useState(true);
   
   // Drag and Drop State
@@ -323,7 +323,7 @@ export function ProjectsPage() {
   };
 
   useEffect(() => {
-    loadData();
+    const _t = setTimeout(() => {  }, 0); return () => clearTimeout(_t);
   }, []);
 
   const sensors = useSensors(

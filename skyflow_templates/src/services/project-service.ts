@@ -6,13 +6,13 @@ export interface Project {
   price: string;
   status: string; // pending, in_progress, done, canceled
   clientId: string;
-  client?: any; // To hold related client data
+  client?: unknown; // To hold related client data
   progressPercentage?: number;
   maintenanceFee?: string;
   maxRevisions?: number;
-  revisions?: any[]; // Array of Revision
-  maintenanceCosts?: any[]; // Array of MaintenanceCost
-  finances?: any[];
+  revisions?: unknown[]; // Array of Revision
+  maintenanceCosts?: unknown[]; // Array of MaintenanceCost
+  finances?: unknown[];
   createdAt: string;
 }
 

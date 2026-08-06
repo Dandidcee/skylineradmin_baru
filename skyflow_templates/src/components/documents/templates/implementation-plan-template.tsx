@@ -47,7 +47,7 @@ const INITIAL_PHASES: Phase[] = [
 ];
 
 export function ImplementationPlanTemplate() {
-  const sig = useSignature("/signature.png");
+  const { wrapRef: wrapRef1, canvasRef: canvasRef1, hasSignature: hasSig1, clear: clearSig1 } = useSignature("/signature.png");
 
   const [docDate, setDocDate] = useState(getTodayDate());
   const [docProj, setDocProj] = useState("N8N-AUTO");
@@ -95,8 +95,9 @@ export function ImplementationPlanTemplate() {
         sizeKb: snap?.sizeKb
       });
       window.print();
-    } catch(err) {
-      toastManager.error({ title: "Gagal", description: "Gagal menyimpan dokumen." });
+    } catch(err: any) {
+      window.print();
+      toastManager.error({ title: "Gagal Menyimpan", description: err.message || "Gagal menyimpan ke sistem, tapi dokumen tetap dicetak." });
     } finally {
       setIsSaving(false);
     }
@@ -428,9 +429,9 @@ export function ImplementationPlanTemplate() {
         <div className="bottom-row" style={{ marginTop: 32 }}>
           <div className="sig-block" style={{ width: 320, flex: "none" }}>
             <h3>Disetujui Oleh</h3>
-            <div className="sig-canvas-wrap" ref={sig.wrapRef}>
-              <canvas ref={sig.canvasRef} />
-              {!sig.hasSignature && (
+            <div className="sig-canvas-wrap" ref={wrapRef1}>
+              <canvas ref={canvasRef1} />
+              {!hasSig1 && (
                 <div className="sig-hint">
                   Tanda tangani di sini
                   <br />
@@ -439,7 +440,7 @@ export function ImplementationPlanTemplate() {
               )}
             </div>
             <div className="sig-ctrl no-print">
-              <button className="sig-btn" onClick={sig.clear}>
+              <button className="sig-btn" onClick={clearSig1}>
                 Hapus
               </button>
             </div>

@@ -267,8 +267,8 @@ const ARTICLES: { title: string; body: React.ReactNode }[] = [
 ];
 
 export function AgreementTemplate() {
-  const sig1 = useSignature("/signature.png");
-  const sig2 = useSignature();
+  const { wrapRef: wrapRef1, canvasRef: canvasRef1, hasSignature: hasSig1, clear: clearSig1 } = useSignature("/signature.png");
+  const { wrapRef: wrapRef2, canvasRef: canvasRef2, hasSignature: hasSig2, clear: clearSig2 } = useSignature();
 
   const [clients, setClients] = useState<any[]>([]);
   const [selectedClientId, setSelectedClientId] = useState("");
@@ -348,7 +348,8 @@ export function AgreementTemplate() {
       });
       window.print();
     } catch (err: any) {
-      toastManager.error({ title: "Gagal", description: err.message || "Gagal menyimpan dokumen." });
+      window.print();
+      toastManager.error({ title: "Gagal Menyimpan", description: err.message || "Gagal menyimpan ke sistem, tapi dokumen tetap dicetak." });
     } finally {
       setIsSaving(false);
     }
@@ -537,9 +538,9 @@ export function AgreementTemplate() {
           <div className="sig-block">
             <h3>PIHAK PERTAMA</h3>
             <div className="sig-sub">Penyedia Jasa</div>
-            <div className="sig-canvas-wrap" ref={sig1.wrapRef}>
-              <canvas ref={sig1.canvasRef} />
-              {!sig1.hasSignature && (
+            <div className="sig-canvas-wrap" ref={wrapRef1}>
+              <canvas ref={canvasRef1} />
+              {!hasSig1 && (
                 <div className="sig-hint">
                   Tanda tangani di sini
                   <br />
@@ -548,7 +549,7 @@ export function AgreementTemplate() {
               )}
             </div>
             <div className="sig-ctrl no-print">
-              <button className="sig-btn" onClick={sig1.clear}>
+              <button className="sig-btn" onClick={clearSig1}>
                 Hapus
               </button>
             </div>
@@ -568,9 +569,9 @@ export function AgreementTemplate() {
           <div className="sig-block">
             <h3>PIHAK KEDUA</h3>
             <div className="sig-sub">Klien</div>
-            <div className="sig-canvas-wrap" ref={sig2.wrapRef}>
-              <canvas ref={sig2.canvasRef} />
-              {!sig2.hasSignature && (
+            <div className="sig-canvas-wrap" ref={wrapRef2}>
+              <canvas ref={canvasRef2} />
+              {!hasSig2 && (
                 <div className="sig-hint">
                   Tanda tangani di sini
                   <br />
@@ -579,7 +580,7 @@ export function AgreementTemplate() {
               )}
             </div>
             <div className="sig-ctrl no-print">
-              <button className="sig-btn" onClick={sig2.clear}>
+              <button className="sig-btn" onClick={clearSig2}>
                 Hapus
               </button>
             </div>

@@ -13,7 +13,7 @@ import { fetchApi } from "./api";
 export async function listEvents(): Promise<CalendarEvent[]> {
   try {
     return await fetchApi('/calendar');
-  } catch (error) {
+  } catch {
     return [];
   }
 }

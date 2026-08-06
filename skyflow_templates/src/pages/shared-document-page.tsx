@@ -7,7 +7,7 @@ import { toast } from "sonner";
 
 export function SharedDocumentPage() {
   const { id } = useParams<{ id: string }>();
-  const [doc, setDoc] = useState<any>(null);
+  const [doc, setDoc] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -191,9 +191,9 @@ export function SharedDocumentPage() {
       toast.success("Tanda tangan berhasil disimpan!");
       setShowSuccessModal(true); // Tampilkan modal ucapan terima kasih
       
-    } catch (error: any) {
+    } catch (error) {
       console.error(error);
-      toast.error(error.message);
+      toast.error(error instanceof Error ? error.message : String(error));
     } finally {
       setSubmitting(false);
     }
@@ -236,12 +236,12 @@ export function SharedDocumentPage() {
           <div>
             <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
               <FileText className="h-6 w-6 text-blue-600" />
-              {doc.title}
+              {doc.title as string}
             </h1>
               <p className="text-slate-500 mt-1 text-sm md:text-base">
-                Untuk: <span className="font-semibold text-slate-700">{doc.client?.name || "Klien"}</span>
-                {doc.project && <span> &bull; Project: {doc.project.name}</span>}
-                {doc.creator && <span> &bull; Dibuat oleh: <span className="font-medium text-slate-700">{doc.creator.name}</span></span>}
+                Untuk: <span className="font-semibold text-slate-700">{((doc.client as Record<string, unknown>)?.name as string) || "Klien"}</span>
+                {doc.project && <span> &bull; Project: {(doc.project as Record<string, unknown>).name as string}</span>}
+                {doc.creator && <span> &bull; Dibuat oleh: <span className="font-medium text-slate-700">{(doc.creator as Record<string, unknown>).name as string}</span></span>}
               </p>
           </div>
           
@@ -288,7 +288,7 @@ export function SharedDocumentPage() {
               </div>
             ) : doc.fileUrl ? (
               <div className="w-full h-[60vh] flex items-center justify-center bg-slate-100">
-                <a href={doc.fileUrl} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline flex items-center gap-2">
+                <a href={doc.fileUrl as string} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline flex items-center gap-2">
                   <FileText className="h-5 w-5" /> Buka Lampiran Dokumen
                 </a>
               </div>
@@ -314,11 +314,11 @@ export function SharedDocumentPage() {
             {doc.clientSignature ? (
               <div className="flex flex-col items-center py-6">
                 <img 
-                  src={doc.clientSignature} 
+                  src={doc.clientSignature as string} 
                   alt="Tanda Tangan Klien" 
                   className="max-h-40 border-b border-slate-300 pb-2 mb-4"
                 />
-                <p className="text-sm font-medium text-slate-600">Disetujui oleh {doc.client?.name}</p>
+                <p className="text-sm font-medium text-slate-600">Disetujui oleh {((doc.client as Record<string, unknown>)?.name as string)}</p>
               </div>
             ) : (
               <div className="flex flex-col items-center">

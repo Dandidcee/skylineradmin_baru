@@ -10,8 +10,8 @@ export interface Credential {
   clientId?: string;
   projectId?: string;
   createdAt: string;
-  client?: any;
-  project?: any;
+  client?: unknown;
+  project?: unknown;
 }
 
 export const getCredentials = async (): Promise<Credential[]> => {

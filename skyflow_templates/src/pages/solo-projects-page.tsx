@@ -63,7 +63,8 @@ export function SoloProjectsPage() {
   };
 
   useEffect(() => {
-    loadProjects();
+    const t = setTimeout(() => loadProjects(), 0);
+    return () => clearTimeout(t);
   }, []);
 
   const formatDate = (iso?: string) => {
@@ -104,9 +105,9 @@ export function SoloProjectsPage() {
       setEditingProject(null);
       setFormData({ bossName: "", projectName: "", paymentAmount: "", debtAmount: "", progress: "0" });
       loadProjects();
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      toast.error(err.message || "Gagal menyimpan project.");
+      toast.error(err instanceof Error ? err.message : "Gagal menyimpan project.");
     } finally {
       setIsSubmitting(false);
     }
@@ -117,8 +118,8 @@ export function SoloProjectsPage() {
       await updateSoloProject(proj.id, { debtAmount: 0 });
       loadProjects();
       toast.success("Project berhasil ditandai lunas.");
-    } catch (err: any) {
-      toast.error(err.message || "Gagal menandai lunas.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Gagal menandai lunas.");
     }
   };
 
@@ -127,8 +128,8 @@ export function SoloProjectsPage() {
       await deleteSoloProject(id);
       loadProjects();
       toast.success("Project berhasil dihapus.");
-    } catch (err: any) {
-      toast.error(err.message || "Gagal menghapus project.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Gagal menghapus project.");
     }
   };
 

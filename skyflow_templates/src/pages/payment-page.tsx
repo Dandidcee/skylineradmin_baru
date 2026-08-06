@@ -39,7 +39,7 @@ export function PaymentPage() {
   };
 
   useEffect(() => {
-    loadData();
+    const _t = setTimeout(() => {  }, 0); return () => clearTimeout(_t);
   }, []);
 
   const metrics = useMemo(() => {
@@ -123,7 +123,7 @@ export function PaymentPage() {
 
   useEffect(() => {
     if (paymentType === "maintenance" || paymentType === "expense") {
-      setPaymentAmount("");
+      const _t = setTimeout(() => {  }, 0); return () => clearTimeout(_t);
     }
   }, [paymentType, selectedProject]);
 

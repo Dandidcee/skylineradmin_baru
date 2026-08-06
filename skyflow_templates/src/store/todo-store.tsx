@@ -77,13 +77,16 @@ export function TodoProvider({ children }: { children: ReactNode }) {
     update((p) => p.filter((t) => t.id !== id));
 
   useEffect(() => {
-    void refresh();
+    const t = setTimeout(() => void refresh(), 0);
     const interval = setInterval(() => {
       if (document.visibilityState === "visible") {
         void refresh(true);
       }
     }, 60000); // Auto refresh every 60 seconds when tab is active
-    return () => clearInterval(interval);
+    return () => {
+      clearTimeout(t);
+      clearInterval(interval);
+    };
   }, []);
 
   return (
@@ -105,6 +108,7 @@ export function TodoProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useTodos() {
   const ctx = useContext(TodoContext);
   if (!ctx) throw new Error("useTodos harus dipakai di dalam TodoProvider");

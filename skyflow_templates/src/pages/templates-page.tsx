@@ -14,9 +14,10 @@ export function TemplatesPage() {
 
   useEffect(() => {
     if (tParam && tParam !== active) {
-      setActive(tParam);
+      const t = setTimeout(() => setActive(tParam), 0);
+      return () => clearTimeout(t);
     }
-  }, [tParam]);
+  }, [tParam, active]);
 
   const handleBack = () => {
     setActive(null);

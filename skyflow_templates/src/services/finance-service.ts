@@ -6,7 +6,7 @@ export type Finance = {
   amount: number;
   status: string;
   projectId?: string;
-  project?: any;
+  project?: unknown;
   notes?: string;
   createdAt: string;
   updatedAt: string;

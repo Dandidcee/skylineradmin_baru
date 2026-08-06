@@ -48,9 +48,12 @@ export function EventDialog({ open, onOpenChange, event, defaultDate }: Props) {
 
   useEffect(() => {
     if (open) {
-      setDraft(
-        event ?? blank(defaultDate ?? new Date().toISOString().slice(0, 10))
-      );
+      const t = setTimeout(() => {
+        setDraft(
+          event ?? blank(defaultDate ?? new Date().toISOString().slice(0, 10))
+        );
+      }, 0);
+      return () => clearTimeout(t);
     }
   }, [open, event, defaultDate]);
 

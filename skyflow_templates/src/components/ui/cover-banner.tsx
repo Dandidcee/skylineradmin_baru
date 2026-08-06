@@ -38,7 +38,7 @@ export function CoverBanner({
 
   useEffect(() => {
     const saved = localStorage.getItem(`cover:${storageKey}`);
-    if (saved) setCoverId(saved);
+    if (saved) { const _t = setTimeout(() => setCoverId(saved), 0); return () => clearTimeout(_t); }
   }, [storageKey]);
 
   const select = (id: string) => {

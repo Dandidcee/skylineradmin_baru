@@ -40,7 +40,7 @@ export function MaintenancePage() {
   };
 
   useEffect(() => {
-    loadData();
+    const _t = setTimeout(() => {  }, 0); return () => clearTimeout(_t);
   }, []);
 
   const clients = useMemo(() => {

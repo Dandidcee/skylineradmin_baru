@@ -66,11 +66,14 @@ export function CalendarProvider({ children }: { children: ReactNode }) {
     });
 
   useEffect(() => {
-    void refresh();
+    const t = setTimeout(() => void refresh(), 0);
     const interval = setInterval(() => {
       void refresh(true);
     }, 30000); // Auto refresh every 30 seconds
-    return () => clearInterval(interval);
+    return () => {
+      clearTimeout(t);
+      clearInterval(interval);
+    };
   }, []);
 
   return (
@@ -82,6 +85,7 @@ export function CalendarProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useCalendar() {
   const ctx = useContext(CalendarContext);
   if (!ctx) throw new Error("useCalendar harus dipakai di dalam CalendarProvider");

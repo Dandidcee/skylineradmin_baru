@@ -89,7 +89,10 @@ function DayColumn({
   // warna sticky disimpan per hari-dalam-minggu (persisten lintas minggu)
   useEffect(() => {
     const saved = localStorage.getItem(`sticky:${weekdayIndex}`) as StickyKey | null;
-    if (saved) setColorKey(saved);
+    if (saved) {
+      const t = setTimeout(() => setColorKey(saved), 0);
+      return () => clearTimeout(t);
+    }
   }, [weekdayIndex]);
 
   const pickColor = (key: StickyKey) => {

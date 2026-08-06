@@ -42,13 +42,16 @@ export function DocumentProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    void refresh();
+    const t = setTimeout(() => void refresh(), 0);
     const interval = setInterval(() => {
       if (document.visibilityState === "visible") {
         void refresh(true);
       }
     }, 60000); // Auto refresh every 60 seconds when tab is active
-    return () => clearInterval(interval);
+    return () => {
+      clearTimeout(t);
+      clearInterval(interval);
+    };
   }, []);
 
   return (
@@ -58,6 +61,7 @@ export function DocumentProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useDocuments() {
   const ctx = useContext(DocumentContext);
   if (!ctx)

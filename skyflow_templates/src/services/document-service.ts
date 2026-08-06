@@ -8,7 +8,7 @@ import { fetchApi } from "./api";
 export async function listDocuments(): Promise<DocumentItem[]> {
   try {
     return await fetchApi('/documents');
-  } catch (error) {
+  } catch {
     return [];
   }
 }
@@ -16,7 +16,7 @@ export async function listDocuments(): Promise<DocumentItem[]> {
 export async function getDashboardStats(): Promise<DashboardStats> {
   try {
     return await fetchApi('/stats');
-  } catch (error) {
+  } catch {
     return {
       totalDocuments: 0,
       generatedThisMonth: 0,
@@ -27,12 +27,8 @@ export async function getDashboardStats(): Promise<DashboardStats> {
 }
 
 export async function deleteDocument(id: string): Promise<boolean> {
-  try {
-    await fetchApi(`/documents/${id}`, { method: 'DELETE' });
-    return true;
-  } catch (error) {
-    throw error;
-  }
+  await fetchApi(`/documents/${id}`, { method: 'DELETE' });
+  return true;
 }
 
 export async function updateDocument(id: string, data: { title: string }): Promise<DocumentItem> {
@@ -211,7 +207,7 @@ export function createDocumentSnapshot(title: string): { fileUrl: string, sizeKb
           // Pastikan tidak ada dark mode class
           document.documentElement.classList.remove('dark');
           window.onload = () => { setTimeout(() => { window.print(); }, 500); }
-        <\/script>
+        </script>
       </body>
     </html>
   `;

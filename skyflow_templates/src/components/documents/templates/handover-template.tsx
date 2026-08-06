@@ -7,8 +7,8 @@ import { toastManager } from "@/components/ui/toast";
 import "./template.css";
 
 export function HandoverTemplate() {
-  const sig = useSignature("/signature.png"); // Signature for SkyFlow
-  const sig2 = useSignature(); // Signature for Client
+  const { wrapRef: wrapRef1, canvasRef: canvasRef1, hasSignature: hasSig1, clear: clearSig1 } = useSignature("/signature.png"); // Signature for SkyFlow
+  const { wrapRef: wrapRef2, canvasRef: canvasRef2, hasSignature: hasSig2, clear: clearSig2 } = useSignature(); // Signature for Client
 
   const [docDate, setDocDate] = useState(getTodayDate());
   const [docSeq, setDocSeq] = useState("001");
@@ -64,10 +64,13 @@ export function HandoverTemplate() {
       if (client) {
         const cName = client.name;
         const cComp = client.company;
-        if (cName && cComp) setClientCompany(`${cName} / ${cComp}`);
-        else if (cName) setClientCompany(cName);
-        else if (cComp) setClientCompany(cComp);
-        else setClientCompany("Nama Klien / Perusahaan");
+        const _t = setTimeout(() => {
+          if (cName && cComp) setClientCompany(`${cName} / ${cComp}`);
+          else if (cName) setClientCompany(cName);
+          else if (cComp) setClientCompany(cComp);
+          else setClientCompany("Nama Klien / Perusahaan");
+        }, 0);
+        return () => clearTimeout(_t);
         setClientName(client.name || "Nama Klien");
         const address = client.address || "-";
         const phone = client.phone || "-";
@@ -101,8 +104,13 @@ export function HandoverTemplate() {
       } else {
         toastManager.success({ title: "Berhasil", description: "Berita Acara Serah Terima disimpan." });
       }
-    } catch(err) {
-      toastManager.error({ title: "Gagal", description: "Gagal menyimpan dokumen." });
+    } catch(err: any) {
+      if (isPrint) {
+        window.print();
+        toastManager.error({ title: "Gagal Menyimpan", description: err.message || "Gagal menyimpan ke sistem, tapi dokumen tetap dicetak." });
+      } else {
+        toastManager.error({ title: "Gagal", description: err.message || "Gagal menyimpan dokumen." });
+      }
     } finally {
       setIsSaving(false);
     }
@@ -376,9 +384,9 @@ export function HandoverTemplate() {
         <div className="bottom-row">
           <div className="sig-block">
             <h3>Pihak Pertama (Penyedia)</h3>
-            <div className="sig-canvas-wrap" ref={sig.wrapRef}>
-              <canvas ref={sig.canvasRef} />
-              {!sig.hasSignature && (
+            <div className="sig-canvas-wrap" ref={wrapRef1}>
+              <canvas ref={canvasRef1} />
+              {!hasSig1 && (
                 <div className="sig-hint">
                   Tanda tangani di sini
                   <br />
@@ -387,7 +395,7 @@ export function HandoverTemplate() {
               )}
             </div>
             <div className="sig-ctrl no-print">
-              <button className="sig-btn" onClick={sig.clear}>
+              <button className="sig-btn" onClick={clearSig1}>
                 Hapus
               </button>
             </div>
@@ -414,9 +422,9 @@ export function HandoverTemplate() {
 
           <div className="sig-block">
             <h3>Pihak Kedua (Klien)</h3>
-            <div className="sig-canvas-wrap" ref={sig2.wrapRef}>
-              <canvas ref={sig2.canvasRef} />
-              {!sig2.hasSignature && (
+            <div className="sig-canvas-wrap" ref={wrapRef2}>
+              <canvas ref={canvasRef2} />
+              {!hasSig2 && (
                 <div className="sig-hint">
                   Tanda tangani di sini
                   <br />
@@ -425,7 +433,7 @@ export function HandoverTemplate() {
               )}
             </div>
             <div className="sig-ctrl no-print">
-              <button className="sig-btn" onClick={sig2.clear}>
+              <button className="sig-btn" onClick={clearSig2}>
                 Hapus
               </button>
             </div>

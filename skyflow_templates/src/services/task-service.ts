@@ -8,9 +8,9 @@ export type Task = {
   priority: string;
   dueDate?: string;
   projectId?: string;
-  project?: any;
+  project?: unknown;
   assigneeId?: string;
-  assignee?: any;
+  assignee?: unknown;
   createdAt: string;
   updatedAt: string;
 };

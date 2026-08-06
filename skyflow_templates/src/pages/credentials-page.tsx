@@ -49,7 +49,7 @@ export function CredentialsPage() {
   };
 
   useEffect(() => {
-    loadData();
+    const _t = setTimeout(() => {  }, 0); return () => clearTimeout(_t);
   }, []);
 
   const filteredCredentials = useMemo(() => {

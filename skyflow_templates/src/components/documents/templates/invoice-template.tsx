@@ -59,12 +59,12 @@ const PAY_DETAILS: Record<
 };
 
 export function InvoiceTemplate() {
-  const sig = useSignature("/signature.png");
+  const { wrapRef: wrapRef1, canvasRef: canvasRef1, hasSignature: hasSig1, clear: clearSig1 } = useSignature("/signature.png");
   const refFromUrl = new URLSearchParams(window.location.search).get('ref');
 
   const [invDate, setInvDate] = useState(getTodayDate());
   const [invProj, setInvProj] = useState(refFromUrl || "001");
-  const [invNo, setInvNo] = useState("SFI/08-06-2026/001");
+  const [invNo, setInvNo] = useState(`SFI-INV/${getTodayDate()}/001`);
   const [status, setStatus] = useState<"unpaid" | "paid">("unpaid");
   const [items, setItems] = useState<LineItem[]>(INITIAL_ITEMS);
   const [ppnEnabled, setPpnEnabled] = useState(false);
@@ -91,10 +91,13 @@ export function InvoiceTemplate() {
       if (client) {
         const cName = client.name;
         const cComp = client.company;
-        if (cName && cComp) setClientCompany(`${cName} / ${cComp}`);
-        else if (cName) setClientCompany(cName);
-        else if (cComp) setClientCompany(cComp);
-        else setClientCompany("Nama Klien / Perusahaan");
+        const _t = setTimeout(() => {
+          if (cName && cComp) setClientCompany(`${cName} / ${cComp}`);
+          else if (cName) setClientCompany(cName);
+          else if (cComp) setClientCompany(cComp);
+          else setClientCompany("Nama Klien / Perusahaan");
+        }, 0);
+        return () => clearTimeout(_t);
         const address = client.address || "-";
         const phone = client.phone || "-";
         setClientDetail(`${address} · ${phone}`);
@@ -148,7 +151,12 @@ export function InvoiceTemplate() {
         toastManager.success({ title: "Berhasil", description: "Invoice disimpan." });
       }
     } catch(err: any) {
-      toastManager.error({ title: "Gagal", description: err.message || "Gagal menyimpan dokumen." });
+      if (isPrint) {
+        window.print();
+        toastManager.error({ title: "Gagal Menyimpan", description: err.message || "Gagal menyimpan ke sistem, tapi dokumen tetap dicetak." });
+      } else {
+        toastManager.error({ title: "Gagal", description: err.message || "Gagal menyimpan dokumen." });
+      }
     } finally {
       setIsSaving(false);
     }
@@ -446,9 +454,9 @@ export function InvoiceTemplate() {
           <div style={{ display: "flex", justifyContent: "space-between", gap: "40px" }}>
             <div className="sig-block">
               <h3>Tanda Tangan Digital</h3>
-            <div className="sig-canvas-wrap" ref={sig.wrapRef}>
-              <canvas ref={sig.canvasRef} />
-              {!sig.hasSignature && (
+            <div className="sig-canvas-wrap" ref={wrapRef1}>
+              <canvas ref={canvasRef1} />
+              {!hasSig1 && (
                 <div className="sig-hint">
                   Tanda tangani di sini
                   <br />
@@ -457,7 +465,7 @@ export function InvoiceTemplate() {
               )}
             </div>
             <div className="sig-ctrl no-print">
-              <button className="sig-btn" onClick={sig.clear}>
+              <button className="sig-btn" onClick={clearSig1}>
                 Hapus
               </button>
             </div>
