@@ -24,6 +24,10 @@ export const feedbackService = {
     return fetchApi('/feedback');
   },
 
+  getPublicFeedbacks: async (): Promise<CustomerFeedback[]> => {
+    return fetchApi('/feedback/public');
+  },
+
   deleteFeedback: async (id: string) => {
     return fetchApi(`/feedback/${id}`, {
       method: 'DELETE',

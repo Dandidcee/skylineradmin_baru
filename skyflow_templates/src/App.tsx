@@ -32,7 +32,7 @@ const PublicFeedbackPage = lazyNamed(import("@/pages/public-feedback-page"), "Pu
 const PublicTestimoniesPage = lazyNamed(import("@/pages/public-testimonies-page"), "PublicTestimoniesPage");
 const FeedbackManagePage = lazyNamed(import("@/pages/feedback-manage-page"), "FeedbackManagePage");
 // Halaman publik (login & shared document) tidak butuh data store
-const PUBLIC_PATHS = ["/login", "/shared-document", "/form", "/feedback", "/testimonies"];
+const PUBLIC_PATHS = ["/login", "/shared-document", "/form", "/feedback", "/testimoni"];
 
 /**
  * Provider wrapper yang hanya aktif saat user sudah login.
@@ -91,7 +91,7 @@ export default function App() {
             <Route path="/shared-document/:id" element={<SharedDocumentPage />} />
             <Route path="/form"                element={<PublicFormPage />} />
             <Route path="/feedback"            element={<PublicFeedbackPage />} />
-            <Route path="/testimonies"         element={<PublicTestimoniesPage />} />
+            <Route path="/testimoni"           element={<PublicTestimoniesPage />} />
 
             {/* Protected Routes */}
             <Route path="/"                    element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />

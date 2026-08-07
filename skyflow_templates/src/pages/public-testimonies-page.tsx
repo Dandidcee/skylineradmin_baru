@@ -13,7 +13,7 @@ export function PublicTestimoniesPage() {
   useEffect(() => {
     const fetchFeedbacks = async () => {
       try {
-        const data = await feedbackService.getFeedbacks();
+        const data = await feedbackService.getPublicFeedbacks();
         setFeedbacks(data);
       } catch (err: any) {
         setError(err.message || "Gagal memuat testimoni.");
