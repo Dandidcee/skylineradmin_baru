@@ -13,8 +13,9 @@ module.exports = {
     },
     {
       name: "skyflow-frontend",
-      script: "npx",
-      args: "serve -s skyflow_templates/dist -l 5173",
+      script: "npm",
+      args: "run preview -- --port 5173 --host",
+      cwd: "./skyflow_templates",
       env: {
         NODE_ENV: "production"
       }
