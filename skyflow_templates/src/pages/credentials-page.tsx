@@ -180,7 +180,6 @@ export function CredentialsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredCredentials.map(cred => (
               <Card key={cred.id} className="relative overflow-hidden group">
-                <div className="absolute top-0 left-0 w-1 h-full bg-blue-500" />
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <div>
