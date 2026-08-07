@@ -44,7 +44,13 @@ router.post('/login', async (req, res) => {
         email: user.email,
         role: user.role,
         photoUrl: user.photoUrl,
-        permissions: JSON.parse(user.permissions),
+        permissions: (() => {
+          try {
+            return JSON.parse(user.permissions);
+          } catch {
+            return [];
+          }
+        })(),
       }
     });
   } catch (error) {

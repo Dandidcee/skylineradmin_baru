@@ -1,0 +1,13 @@
+# Ganti yourdomain.com dengan domain Anda. Jika hanya menggunakan IP, ganti dengan IP VPS Anda.
+yourdomain.com {
+    # 1. Reverse Proxy ke Backend API (Node.js/Express)
+    reverse_proxy /api/* localhost:3000
+
+    # 2. Serve static files untuk Frontend (React/Vite)
+    handle {
+        # Path ini harus sesuai dengan lokasi folder dist dari skyflow_templates di VPS Anda
+        root * /var/www/skyflow/skyflow_templates/dist
+        file_server
+        try_files {path} /index.html
+    }
+}

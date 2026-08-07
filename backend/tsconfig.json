@@ -6,7 +6,8 @@
     "forceConsistentCasingInFileNames": true,
     "strict": false,
     "skipLibCheck": true,
-    "rootDir": "./"
+    "rootDir": "./src",
+    "outDir": "./dist"
   },
   "ts-node": {
     "transpileOnly": true

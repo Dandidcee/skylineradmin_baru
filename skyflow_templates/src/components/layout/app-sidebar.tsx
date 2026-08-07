@@ -149,7 +149,13 @@ export function AppSidebar() {
       
       const mergedUser = { ...user, ...updatedUser };
       setUser(mergedUser);
-      localStorage.setItem('user', JSON.stringify(mergedUser));
+      
+      const userToStore = { ...mergedUser };
+      if (userToStore.photoUrl && userToStore.photoUrl.length > 50000) {
+        delete userToStore.photoUrl;
+      }
+      localStorage.setItem('user', JSON.stringify(userToStore));
+      
       setIsProfileOpen(false);
       setEditPassword("");
       toast.success("Profil berhasil diperbarui");

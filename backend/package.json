@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/index.ts",
-    "start": "ts-node src/index.ts"
+    "start": "ts-node src/index.ts",
+    "build": "tsc",
+    "start:prod": "node dist/index.js"
   },
   "keywords": [],
   "author": "",

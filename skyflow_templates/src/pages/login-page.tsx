@@ -40,7 +40,13 @@ export function LoginPage() {
       if (!res.ok) throw new Error(data.error || "Login gagal");
       
       setToken(data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
+      
+      // Mencegah error QuotaExceededError jika photoUrl (base64) terlalu besar
+      const userToStore = { ...data.user };
+      if (userToStore.photoUrl && userToStore.photoUrl.length > 50000) {
+        delete userToStore.photoUrl; // Hapus foto jika ukurannya terlalu besar untuk localStorage
+      }
+      localStorage.setItem('user', JSON.stringify(userToStore));
       toastManager.success({ title: "Login berhasil", description: "Mengalihkan ke dashboard..." });
       setTimeout(() => {
         window.location.href = "/";
