@@ -13,12 +13,10 @@ module.exports = {
     },
     {
       name: "skyflow-frontend",
-      script: "serve",
+      script: "npx",
+      args: "serve -s skyflow_templates/dist -l 5173",
       env: {
-        PM2_SERVE_PATH: './skyflow_templates/dist',
-        PM2_SERVE_PORT: 5173, // Ganti dengan port yang selama ini diarahin sama Caddy (default vite: 5173)
-        PM2_SERVE_SPA: 'true',
-        PM2_SERVE_HOMEPAGE: '/index.html'
+        NODE_ENV: "production"
       }
     }
   ]
