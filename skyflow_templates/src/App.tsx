@@ -5,23 +5,29 @@ import { DocumentProvider } from "@/store/document-store";
 import { ClientProvider } from "@/store/client-store";
 import { CalendarProvider } from "@/store/calendar-store";
 import { TodoProvider } from "@/store/todo-store";
-import { DashboardPage } from "@/pages/dashboard-page";
-import { DocumentsPage } from "@/pages/documents-page";
-import { TemplatesPage } from "@/pages/templates-page";
-import { ClientsPage } from "@/pages/clients-page";
-import { PaymentPage } from "./pages/payment-page";
-import { CalendarPage } from "@/pages/calendar-page";
-import { TodoPage } from "@/pages/todo-page";
-import { ProjectsPage } from "./pages/projects-page";
-import { SoloProjectsPage } from "./pages/solo-projects-page";
-import { LoginPage } from "@/pages/login-page";
-import { SettingsPage } from "./pages/settings-page";
-import { RevisionsPage } from "@/pages/revisions-page";
-import { MaintenancePage } from "@/pages/maintenance-page";
-import { SharedDocumentPage } from "@/pages/shared-document-page";
-import { CredentialsPage } from "@/pages/credentials-page";
-import { PublicFormPage } from "@/pages/public-form-page";
-import { FormResponsesPage } from "@/pages/form-responses-page";
+import { lazy, Suspense } from "react";
+
+// Helper for named exports
+const lazyNamed = (modulePromise: Promise<any>, exportName: string) => 
+  lazy(() => modulePromise.then(module => ({ default: module[exportName] })));
+
+const DashboardPage = lazyNamed(import("@/pages/dashboard-page"), "DashboardPage");
+const DocumentsPage = lazyNamed(import("@/pages/documents-page"), "DocumentsPage");
+const TemplatesPage = lazyNamed(import("@/pages/templates-page"), "TemplatesPage");
+const ClientsPage = lazyNamed(import("@/pages/clients-page"), "ClientsPage");
+const PaymentPage = lazyNamed(import("./pages/payment-page"), "PaymentPage");
+const CalendarPage = lazyNamed(import("@/pages/calendar-page"), "CalendarPage");
+const TodoPage = lazyNamed(import("@/pages/todo-page"), "TodoPage");
+const ProjectsPage = lazyNamed(import("./pages/projects-page"), "ProjectsPage");
+const SoloProjectsPage = lazyNamed(import("./pages/solo-projects-page"), "SoloProjectsPage");
+const LoginPage = lazyNamed(import("@/pages/login-page"), "LoginPage");
+const SettingsPage = lazyNamed(import("./pages/settings-page"), "SettingsPage");
+const RevisionsPage = lazyNamed(import("@/pages/revisions-page"), "RevisionsPage");
+const MaintenancePage = lazyNamed(import("@/pages/maintenance-page"), "MaintenancePage");
+const SharedDocumentPage = lazyNamed(import("@/pages/shared-document-page"), "SharedDocumentPage");
+const CredentialsPage = lazyNamed(import("@/pages/credentials-page"), "CredentialsPage");
+const PublicFormPage = lazyNamed(import("@/pages/public-form-page"), "PublicFormPage");
+const FormResponsesPage = lazyNamed(import("@/pages/form-responses-page"), "FormResponsesPage");
 // Halaman publik (login & shared document) tidak butuh data store
 const PUBLIC_PATHS = ["/login", "/shared-document", "/form"];
 
@@ -68,28 +74,37 @@ export default function App() {
   return (
     <ThemeProvider>
       <AuthProviders>
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/login"               element={<LoginPage />} />
-          <Route path="/shared-document/:id" element={<SharedDocumentPage />} />
-          <Route path="/form"                element={<PublicFormPage />} />
+        <Suspense fallback={
+          <div className="flex h-screen w-full items-center justify-center bg-[#0d0d0d]">
+            <div className="flex flex-col items-center gap-4">
+              <div className="h-10 w-10 animate-spin rounded-full border-4 border-white/10 border-t-brand-blue"></div>
+              <p className="text-white/50 text-sm font-medium animate-pulse tracking-widest uppercase">Memuat...</p>
+            </div>
+          </div>
+        }>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/login"               element={<LoginPage />} />
+            <Route path="/shared-document/:id" element={<SharedDocumentPage />} />
+            <Route path="/form"                element={<PublicFormPage />} />
 
-          {/* Protected Routes */}
-          <Route path="/"                    element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-          <Route path="/documents"           element={<ProtectedRoute><DocumentsPage /></ProtectedRoute>} />
-          <Route path="/templates"           element={<ProtectedRoute><TemplatesPage /></ProtectedRoute>} />
-          <Route path="/clients"             element={<ProtectedRoute><ClientsPage /></ProtectedRoute>} />
-          <Route path="/projects"            element={<ProtectedRoute><ProjectsPage /></ProtectedRoute>} />
-          <Route path="/solo-projects"       element={<ProtectedRoute><SoloProjectsPage /></ProtectedRoute>} />
-          <Route path="/payment"             element={<ProtectedRoute><PaymentPage /></ProtectedRoute>} />
-          <Route path="/maintenance"         element={<ProtectedRoute><MaintenancePage /></ProtectedRoute>} />
-          <Route path="/calendar"            element={<ProtectedRoute><CalendarPage /></ProtectedRoute>} />
-          <Route path="/activities"          element={<ProtectedRoute><TodoPage /></ProtectedRoute>} />
-          <Route path="/revisions"           element={<ProtectedRoute><RevisionsPage /></ProtectedRoute>} />
-          <Route path="/credentials"         element={<ProtectedRoute><CredentialsPage /></ProtectedRoute>} />
-          <Route path="/forms"               element={<ProtectedRoute><FormResponsesPage /></ProtectedRoute>} />
-          <Route path="/settings"            element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
-        </Routes>
+            {/* Protected Routes */}
+            <Route path="/"                    element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+            <Route path="/documents"           element={<ProtectedRoute><DocumentsPage /></ProtectedRoute>} />
+            <Route path="/templates"           element={<ProtectedRoute><TemplatesPage /></ProtectedRoute>} />
+            <Route path="/clients"             element={<ProtectedRoute><ClientsPage /></ProtectedRoute>} />
+            <Route path="/projects"            element={<ProtectedRoute><ProjectsPage /></ProtectedRoute>} />
+            <Route path="/solo-projects"       element={<ProtectedRoute><SoloProjectsPage /></ProtectedRoute>} />
+            <Route path="/payment"             element={<ProtectedRoute><PaymentPage /></ProtectedRoute>} />
+            <Route path="/maintenance"         element={<ProtectedRoute><MaintenancePage /></ProtectedRoute>} />
+            <Route path="/calendar"            element={<ProtectedRoute><CalendarPage /></ProtectedRoute>} />
+            <Route path="/activities"          element={<ProtectedRoute><TodoPage /></ProtectedRoute>} />
+            <Route path="/revisions"           element={<ProtectedRoute><RevisionsPage /></ProtectedRoute>} />
+            <Route path="/credentials"         element={<ProtectedRoute><CredentialsPage /></ProtectedRoute>} />
+            <Route path="/forms"               element={<ProtectedRoute><FormResponsesPage /></ProtectedRoute>} />
+            <Route path="/settings"            element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+          </Routes>
+        </Suspense>
         <Toaster 
           position="top-center" 
           expand={true} 
