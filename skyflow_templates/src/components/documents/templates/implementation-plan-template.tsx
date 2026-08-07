@@ -48,6 +48,7 @@ const INITIAL_PHASES: Phase[] = [
 
 export function ImplementationPlanTemplate() {
   const { wrapRef: wrapRef1, canvasRef: canvasRef1, hasSignature: hasSig1, clear: clearSig1 } = useSignature("/signature.png");
+  const { wrapRef: wrapRef2, canvasRef: canvasRef2, hasSignature: hasSig2, clear: clearSig2 } = useSignature();
 
   const [docDate, setDocDate] = useState(getTodayDate());
   const [docProj, setDocProj] = useState("N8N-AUTO");
@@ -426,9 +427,54 @@ export function ImplementationPlanTemplate() {
 
 
         {/* BOTTOM: SIGNATURE */}
-        <div className="bottom-row" style={{ marginTop: 32 }}>
+        <div className="bottom-row" style={{ marginTop: 32, display: "flex", justifyContent: "space-between", gap: "24px", flexWrap: "wrap" }}>
+          
+          {/* CLIENT SIGNATURE */}
           <div className="sig-block" style={{ width: 320, flex: "none" }}>
-            <h3>Disetujui Oleh</h3>
+            <h3>Disetujui Oleh (Klien)</h3>
+            <div className="sig-canvas-wrap" ref={wrapRef2}>
+              <canvas ref={canvasRef2} />
+              {!hasSig2 && (
+                <div className="sig-hint">
+                  Tanda tangani di sini
+                  <br />
+                  <span style={{ fontSize: 10 }}>klik & geser untuk menggambar</span>
+                </div>
+              )}
+            </div>
+            <div className="sig-ctrl no-print">
+              <button className="sig-btn" onClick={clearSig2}>
+                Hapus
+              </button>
+            </div>
+            <div className="sig-name-wrap">
+              <div
+                className="sig-name-lbl"
+                contentEditable
+                suppressContentEditableWarning
+              >
+                Penanggung Jawab Klien
+              </div>
+              <div
+                style={{ fontSize: 14, fontWeight: 600, color: "var(--ink)", marginTop: 3 }}
+                contentEditable
+                suppressContentEditableWarning
+              >
+                {clientName}
+              </div>
+              <div
+                style={{ fontSize: 12, color: "var(--ink3)", marginTop: 3 }}
+                contentEditable
+                suppressContentEditableWarning
+              >
+                Klien
+              </div>
+            </div>
+          </div>
+
+          {/* PROVIDER SIGNATURE */}
+          <div className="sig-block" style={{ width: 320, flex: "none" }}>
+            <h3>Dibuat Oleh (Penyedia Jasa)</h3>
             <div className="sig-canvas-wrap" ref={wrapRef1}>
               <canvas ref={canvasRef1} />
               {!hasSig1 && (
