@@ -327,11 +327,13 @@ export function AgreementTemplate() {
     }
   }, [selectedClientId, clients]);
 
-  const [docProj] = useState("001");
+  const [docDate, setDocDate] = useState(getTodayDate());
+  const [docProj, setDocProj] = useState("001");
+  const [docNo, setDocNo] = useState(`SFI-AGR/${getTodayDate()}/001`);
   const refFromUrl = new URLSearchParams(window.location.search).get("ref");
 
   const [isSaving, setIsSaving] = useState(false);
-  const docNo = `SFI-AGR/${getTodayDate()}/${docProj}`;
+  const preview = `SFI-AGR/${docDate || "DD-MM-YYYY"}/${docProj}`;
 
   const handleSaveAndPrint = async () => {
     setIsSaving(true);
@@ -359,15 +361,47 @@ export function AgreementTemplate() {
     <div className="skyflow-doc">
       {/* TOOLBAR */}
       <div className="tpl-toolbar" style={{ justifyContent: "space-between", gap: "12px" }}>
-        <div className="num-builder no-print">
-          <label>Penanggung Jawab:</label>
-          <input
-            type="text"
-            style={{ width: 160 }}
-            value={providerName}
-            placeholder="Nama Penanggung Jawab"
-            onChange={(e) => setProviderName(e.target.value)}
-          />
+        <div className="tpl-toolbar-left" style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+          <div className="num-builder no-print">
+            <label>No. Dokumen:</label>
+            <span style={{ color: "var(--gold)", fontWeight: 700, fontSize: 12 }}>SFI-AGR</span>
+            <span className="sep">/</span>
+            <input
+              type="text"
+              maxLength={10}
+              style={{ width: 88 }}
+              value={docDate}
+              placeholder="08-06-2026"
+              onChange={(e) => setDocDate(e.target.value)}
+            />
+            <span className="sep">/</span>
+            <input
+              type="text"
+              style={{ width: 80 }}
+              value={docProj}
+              placeholder="001"
+              onChange={(e) => setDocProj(e.target.value)}
+            />
+            <span style={{ color: "var(--ink3)", fontSize: 10, marginLeft: 4 }}>→</span>
+            <span className="num-preview">{preview}</span>
+            <button
+              className="tpl-btn tpl-btn-ghost"
+              style={{ padding: "5px 12px", fontSize: 10 }}
+              onClick={() => setDocNo(preview)}
+            >
+              Terapkan
+            </button>
+          </div>
+          <div className="num-builder no-print">
+            <label>Penanggung Jawab:</label>
+            <input
+              type="text"
+              style={{ width: 160 }}
+              value={providerName}
+              placeholder="Nama Penanggung Jawab"
+              onChange={(e) => setProviderName(e.target.value)}
+            />
+          </div>
         </div>
         <div className="tpl-toolbar-right" style={{ display: "flex", gap: "12px" }}>
           <select
@@ -405,7 +439,7 @@ export function AgreementTemplate() {
             <div className="doc-label">
               <h1 className="sm long-title">PERJANJIAN KERJA SAMA PENGEMBANGAN SISTEM</h1>
               <div className="doc-sub" contentEditable suppressContentEditableWarning>
-                Nomor: SFI-AGR/{getTodayDate()}/001
+                Nomor: {docNo}
               </div>
             </div>
           </div>

@@ -60,6 +60,7 @@ export function PublicFeedbackPage() {
         type,
         message,
         rating: type === "Testimoni" ? rating : null,
+        isApproved: false,
       });
       setIsSuccess(true);
     } catch (error: any) {
