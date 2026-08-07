@@ -2,7 +2,8 @@ module.exports = {
   apps: [
     {
       name: "skyflow-backend",
-      script: "./backend/dist/index.js",
+      script: "./dist/index.js",
+      cwd: "./backend",
       instances: 1,
       autorestart: true,
       watch: false,
