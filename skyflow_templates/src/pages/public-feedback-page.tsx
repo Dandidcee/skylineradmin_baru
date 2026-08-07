@@ -102,9 +102,9 @@ export function PublicFeedbackPage() {
           </div>
         </div>
 
-        {/* Abstract Background Elements */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-black/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+        {/* Abstract Background Elements (Optimized for performance) */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.1)_0%,transparent_70%)] rounded-full -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.1)_0%,transparent_70%)] rounded-full translate-y-1/2 -translate-x-1/2" />
       </div>
 
       {/* Right Panel - Form */}
