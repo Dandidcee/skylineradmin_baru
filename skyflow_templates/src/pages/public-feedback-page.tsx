@@ -15,6 +15,7 @@ export function PublicFeedbackPage() {
 
   // Form State
   const [name, setName] = useState("");
+  const [companyName, setCompanyName] = useState("");
   const [phone, setPhone] = useState("");
   const [type, setType] = useState("");
   const [message, setMessage] = useState("");
@@ -23,8 +24,8 @@ export function PublicFeedbackPage() {
   const validateStep = () => {
     let isValid = true;
     if (step === 1) {
-      if (!name || !phone) {
-        toast.error("Nama dan No HP wajib diisi!");
+      if (!name) {
+        toast.error("Nama Lengkap wajib diisi!");
         isValid = false;
       }
     } else if (step === 2) {
@@ -54,6 +55,7 @@ export function PublicFeedbackPage() {
     try {
       await feedbackService.submitFeedback({
         name,
+        companyName: companyName || null,
         phone: phone || null,
         type,
         message,
@@ -157,11 +159,21 @@ export function PublicFeedbackPage() {
                     </div>
 
                     <div className="space-y-1.5">
-                      <label className="text-[15px] font-semibold text-text/80">Nomor WhatsApp <span className="text-red-500">*</span></label>
+                      <label className="text-[15px] font-semibold text-text/80">Nama Perusahaan / Bisnis <span className="text-text/40 text-xs font-normal">(Opsional)</span></label>
+                      <input
+                        type="text"
+                        value={companyName} onChange={(e) => setCompanyName(e.target.value)}
+                        className={`w-full rounded-md border bg-transparent px-3 py-2 text-[15px] outline-none transition-colors placeholder:text-muted-foreground border-border focus:border-primary`}
+                        placeholder="PT Skyflow Indonesia"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-[15px] font-semibold text-text/80">Nomor WhatsApp <span className="text-text/40 text-xs font-normal">(Opsional)</span></label>
                       <input
                         type="tel"
-                        value={phone} onChange={(e) => { setPhone(e.target.value); if(showErrors) setShowErrors(false); }}
-                        className={`w-full rounded-md border bg-transparent px-3 py-2 text-[15px] outline-none transition-colors placeholder:text-muted-foreground ${showErrors && !phone ? 'border-red-500 focus:border-red-500' : 'border-border focus:border-primary'}`}
+                        value={phone} onChange={(e) => setPhone(e.target.value)}
+                        className={`w-full rounded-md border bg-transparent px-3 py-2 text-[15px] outline-none transition-colors placeholder:text-muted-foreground border-border focus:border-primary`}
                         placeholder="08123456789"
                       />
                     </div>

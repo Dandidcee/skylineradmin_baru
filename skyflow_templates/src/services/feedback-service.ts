@@ -3,6 +3,7 @@ import { fetchApi } from './api';
 export interface CustomerFeedback {
   id: string;
   name: string;
+  companyName?: string | null;
   phone: string | null;
   type: string;
   message: string;

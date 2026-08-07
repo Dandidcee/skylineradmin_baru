@@ -167,7 +167,8 @@ export function FeedbackManagePage() {
                       </td>
                       <td className="px-4 py-3 font-medium text-text">
                         <div>{item.name}</div>
-                        {item.phone && <div className="text-xs text-text/50 font-normal">{item.phone}</div>}
+                        {item.companyName && <div className="text-xs text-text/60">{item.companyName}</div>}
+                        {item.phone && <div className="text-xs text-text/40 font-normal">{item.phone}</div>}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-text/70">
                         <div className="flex flex-col gap-1">
@@ -247,6 +248,7 @@ export function FeedbackManagePage() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-bold text-lg text-text">{selectedFeedback.name}</h3>
+                  {selectedFeedback.companyName && <p className="text-sm font-medium text-text/80">{selectedFeedback.companyName}</p>}
                   {selectedFeedback.phone && <p className="text-sm text-text/60">{selectedFeedback.phone}</p>}
                 </div>
                 {selectedFeedback.rating && (

@@ -26,7 +26,7 @@ router.get('/public', async (req, res) => {
 // POST /api/feedback (Public route for customers to submit feedback)
 router.post('/', async (req, res) => {
   try {
-    const { name, phone, type, message, rating } = req.body;
+    const { name, companyName, phone, type, message, rating } = req.body;
 
     if (!name || !type || !message) {
       return res.status(400).json({ error: 'Nama, Jenis (Testimoni/Keluhan), dan Pesan wajib diisi.' });
@@ -35,6 +35,7 @@ router.post('/', async (req, res) => {
     const feedback = await prisma.customerFeedback.create({
       data: {
         name,
+        companyName: companyName || null,
         phone: phone || null,
         type,
         message,

@@ -230,12 +230,13 @@ model SurveyResponse {
 }
 
 model CustomerFeedback {
-  id        String   @id @default(uuid())
-  name      String
-  phone     String?
-  type      String   // 'Testimoni', 'Keluhan', 'Pengaduan'
-  message   String
-  rating    Int?     // 1-5, opsional untuk testimoni
-  isApproved Boolean @default(false)
-  createdAt DateTime @default(now())
+  id          String   @id @default(uuid())
+  name        String
+  companyName String?
+  phone       String?
+  type        String   // 'Testimoni', 'Keluhan', 'Pengaduan'
+  message     String
+  rating      Int?     // 1-5, opsional untuk testimoni
+  isApproved  Boolean  @default(false)
+  createdAt   DateTime @default(now())
 }
