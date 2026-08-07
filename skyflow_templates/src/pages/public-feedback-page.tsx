@@ -113,9 +113,11 @@ export function PublicFeedbackPage() {
       <div className="flex-1 flex flex-col relative bg-background overflow-y-auto">
         
         {/* Mobile Header (Hidden on md+) - Moved to top */}
-        <div className="md:hidden flex flex-col px-6 pt-8 pb-2 w-full gap-4">
-          <img src="/LogoMain.png" alt="Skyflow Logo" className="h-8 w-auto max-w-none object-contain scale-[1.8] ml-2 origin-left invert dark:invert-0" />
-          <div className="text-sm font-semibold text-text/50 z-10">Langkah {step} dari 2</div>
+        <div className="md:hidden flex flex-col px-6 pt-20 pb-2 w-full gap-6">
+          <img src="/LogoMain.png" alt="Skyflow Logo" className="h-12 w-auto max-w-none object-contain scale-[2.5] ml-6 origin-left invert dark:invert-0" />
+          <div className="text-sm font-semibold text-text/50 z-10 flex justify-between items-center w-full">
+            <span>Langkah {step} dari 2</span>
+          </div>
         </div>
 
         <div className="flex-1 flex flex-col justify-center p-6 sm:p-12 lg:p-20 pt-0 sm:pt-12">
