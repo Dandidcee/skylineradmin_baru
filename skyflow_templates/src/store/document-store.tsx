@@ -43,14 +43,8 @@ export function DocumentProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const t = setTimeout(() => void refresh(), 0);
-    const interval = setInterval(() => {
-      if (document.visibilityState === "visible") {
-        void refresh(true);
-      }
-    }, 60000); // Auto refresh every 60 seconds when tab is active
     return () => {
       clearTimeout(t);
-      clearInterval(interval);
     };
   }, []);
 
