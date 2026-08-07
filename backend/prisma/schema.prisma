@@ -228,3 +228,13 @@ model SurveyResponse {
   age              Int?
   createdAt        DateTime @default(now())
 }
+
+model CustomerFeedback {
+  id        String   @id @default(uuid())
+  name      String
+  phone     String?
+  type      String   // 'Testimoni', 'Keluhan', 'Pengaduan'
+  message   String
+  rating    Int?     // 1-5, opsional untuk testimoni
+  createdAt DateTime @default(now())
+}

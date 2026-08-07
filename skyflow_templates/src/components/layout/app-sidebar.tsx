@@ -50,6 +50,7 @@ import {
   TrendingUp,
   ChevronDown,
   Key,
+  MessageSquareQuote,
 } from "lucide-react";
 import {
   Sidebar,
@@ -77,6 +78,7 @@ const NAV_ITEMS = [
   { to: "/maintenance", label: "Maintenance", icon: Wrench, end: false },
   { to: "/calendar", label: "Kalender", icon: CalendarDays, end: false },
   { to: "/forms", label: "Form Survey", icon: FormInput, end: false },
+  { to: "/feedbacks-admin", label: "Kelola Testimoni", icon: MessageSquareQuote, end: false },
 ];
 
 function CollapsibleGroup({ label, defaultOpen = true, children }: { label: string, defaultOpen?: boolean, children: React.ReactNode }) {
@@ -196,6 +198,7 @@ export function AppSidebar() {
       "Aktivitas": "AKTIVITAS",
       "Kredensial & Akses": "CREDENTIALS",
       "Form Survey": "FORM",
+      "Kelola Testimoni": "FORM",
     };
     
     const requiredPerm = permissionMap[item.label];

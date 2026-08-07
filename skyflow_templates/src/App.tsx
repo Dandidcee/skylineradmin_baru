@@ -28,8 +28,11 @@ const SharedDocumentPage = lazyNamed(import("@/pages/shared-document-page"), "Sh
 const CredentialsPage = lazyNamed(import("@/pages/credentials-page"), "CredentialsPage");
 const PublicFormPage = lazyNamed(import("@/pages/public-form-page"), "PublicFormPage");
 const FormResponsesPage = lazyNamed(import("@/pages/form-responses-page"), "FormResponsesPage");
+const PublicFeedbackPage = lazyNamed(import("@/pages/public-feedback-page"), "PublicFeedbackPage");
+const PublicTestimoniesPage = lazyNamed(import("@/pages/public-testimonies-page"), "PublicTestimoniesPage");
+const FeedbackManagePage = lazyNamed(import("@/pages/feedback-manage-page"), "FeedbackManagePage");
 // Halaman publik (login & shared document) tidak butuh data store
-const PUBLIC_PATHS = ["/login", "/shared-document", "/form"];
+const PUBLIC_PATHS = ["/login", "/shared-document", "/form", "/feedback", "/testimonies"];
 
 /**
  * Provider wrapper yang hanya aktif saat user sudah login.
@@ -87,6 +90,8 @@ export default function App() {
             <Route path="/login"               element={<LoginPage />} />
             <Route path="/shared-document/:id" element={<SharedDocumentPage />} />
             <Route path="/form"                element={<PublicFormPage />} />
+            <Route path="/feedback"            element={<PublicFeedbackPage />} />
+            <Route path="/testimonies"         element={<PublicTestimoniesPage />} />
 
             {/* Protected Routes */}
             <Route path="/"                    element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
@@ -102,6 +107,7 @@ export default function App() {
             <Route path="/revisions"           element={<ProtectedRoute><RevisionsPage /></ProtectedRoute>} />
             <Route path="/credentials"         element={<ProtectedRoute><CredentialsPage /></ProtectedRoute>} />
             <Route path="/forms"               element={<ProtectedRoute><FormResponsesPage /></ProtectedRoute>} />
+            <Route path="/feedbacks-admin"     element={<ProtectedRoute><FeedbackManagePage /></ProtectedRoute>} />
             <Route path="/settings"            element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
           </Routes>
         </Suspense>

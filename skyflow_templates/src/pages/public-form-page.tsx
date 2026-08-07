@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { formService } from "@/services/form-service";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Loader2, ArrowRight, ArrowLeft, Phone, ChevronDown, Search } from "lucide-react";
+import { Loader2, ArrowRight, ArrowLeft, Phone, ChevronDown, Search, Sun, Moon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTheme } from "@/store/theme-store";
 import { Popover, PopoverTrigger } from "@/components/ui/popover";
 import {
   AlertDialog,
@@ -104,6 +105,7 @@ const SearchableSelect = ({
 };
 
 export function PublicFormPage() {
+  const { theme, setTheme } = useTheme();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [showErrors, setShowErrors] = useState(false);
@@ -228,7 +230,16 @@ export function PublicFormPage() {
     }
   };
   return (
-    <div className="min-h-screen bg-background flex flex-col md:flex-row">
+    <div className="min-h-screen bg-background flex flex-col md:flex-row relative">
+      
+      {/* Theme Toggle Button */}
+      <button
+        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+        className="absolute top-4 right-4 z-50 p-2 rounded-full bg-white/10 hover:bg-white/20 text-text transition-colors border border-border/50 shadow-sm backdrop-blur-md"
+        aria-label="Toggle theme"
+      >
+        {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+      </button>
       
       {/* Left Panel - Branding (Hidden on small screens, shown on md+) */}
       <div className="hidden md:flex w-1/3 lg:w-5/12 relative overflow-hidden bg-primary flex-col justify-between p-12 text-white shadow-2xl z-10">
@@ -295,7 +306,7 @@ export function PublicFormPage() {
                         type="text"
                         value={name} onChange={(e) => { setName(e.target.value); if(showErrors) setShowErrors(false); }}
                         className={`w-full rounded-md border bg-transparent px-3 py-2 text-[15px] outline-none transition-colors placeholder:text-muted-foreground ${showErrors && !name ? 'border-red-500 focus:border-red-500' : 'border-border focus:border-primary'}`}
-                        placeholder="John Doe"
+                        placeholder="Dandi Cahyaman"
                       />
                     </div>
 
