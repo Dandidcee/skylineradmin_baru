@@ -162,17 +162,17 @@ export function PublicFeedbackPage() {
                     </div>
 
                     <div className="space-y-1.5">
-                      <label className="text-[15px] font-semibold text-text/80">Nama Perusahaan / Bisnis <span className="text-text/40 text-xs font-normal">(Opsional)</span></label>
+                      <label className="text-[15px] font-semibold text-text/80">Nama Perusahaan / Bisnis</label>
                       <input
                         type="text"
                         value={companyName} onChange={(e) => setCompanyName(e.target.value)}
                         className={`w-full rounded-md border bg-transparent px-3 py-2 text-[15px] outline-none transition-colors placeholder:text-muted-foreground border-border focus:border-primary`}
-                        placeholder="PT Skyflow Indonesia"
+                        placeholder="Skyflow Studio"
                       />
                     </div>
 
                     <div className="space-y-1.5">
-                      <label className="text-[15px] font-semibold text-text/80">Nomor WhatsApp <span className="text-text/40 text-xs font-normal">(Opsional)</span></label>
+                      <label className="text-[15px] font-semibold text-text/80">Nomor WhatsApp</label>
                       <input
                         type="tel"
                         value={phone} onChange={(e) => setPhone(e.target.value)}
