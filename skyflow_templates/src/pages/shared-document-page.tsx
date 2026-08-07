@@ -83,10 +83,16 @@ export function SharedDocumentPage() {
         if (data.fileUrl && data.fileUrl.startsWith("data:text/html")) {
           const base64Data = data.fileUrl.split(",")[1];
           try {
-            const decoded = decodeURIComponent(escape(atob(base64Data)));
+            let decoded = decodeURIComponent(escape(atob(base64Data)));
             // Disable all contenteditable elements to prevent client edits
-            const readOnlyHtml = decoded.replace(/contenteditable(="[^"]*")?/gi, 'contenteditable="false"');
-            setHtmlContent(readOnlyHtml);
+            decoded = decoded.replace(/contenteditable(="[^"]*")?/gi, 'contenteditable="false"');
+            
+            // Fix legacy documents that are missing <base> tag
+            if (!decoded.includes('<base href=')) {
+               decoded = decoded.replace('</head>', `<base href="${window.location.origin}"></head>`);
+            }
+            
+            setHtmlContent(decoded);
           } catch (e) {
             console.error("Gagal mendecode HTML", e);
           }
