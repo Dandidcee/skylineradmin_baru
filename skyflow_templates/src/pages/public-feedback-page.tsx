@@ -111,16 +111,19 @@ export function PublicFeedbackPage() {
 
       {/* Right Panel - Form */}
       <div className="flex-1 flex flex-col relative bg-background overflow-y-auto">
-        <div className="flex-1 flex flex-col justify-center p-6 sm:p-12 lg:p-20">
         
-        {/* Mobile Header (Hidden on md+) */}
-        <div className="md:hidden flex items-center justify-between mb-8 overflow-hidden h-12">
-          <img src="/LogoMain.png" alt="Skyflow Logo" className="h-12 w-auto max-w-none object-contain scale-[2.5] ml-6 origin-left dark:invert" />
+        {/* Mobile Header (Hidden on md+) - Moved to top */}
+        <div className="md:hidden flex items-center justify-between px-6 pt-6 pb-2 w-full">
+          <div className="overflow-hidden h-12 flex items-center">
+            <img src="/LogoMain.png" alt="Skyflow Logo" className="h-12 w-auto max-w-none object-contain scale-[2.5] ml-6 origin-left invert dark:invert-0" />
+          </div>
           <div className="text-sm font-semibold text-text/50 z-10 relative">Langkah {step} dari 2</div>
         </div>
 
+        <div className="flex-1 flex flex-col justify-center p-6 sm:p-12 lg:p-20 pt-0 sm:pt-12">
+        
         {/* Mobile Progress Bar */}
-        <div className="md:hidden w-full h-2 bg-muted rounded-full mb-10 overflow-hidden">
+        <div className="md:hidden w-full h-1.5 bg-muted rounded-full mb-8 overflow-hidden">
           <motion.div 
             className="h-full bg-primary"
             initial={{ width: `${((step - 1) / 2) * 100}%` }}
