@@ -39,7 +39,7 @@ export function PaymentPage() {
   };
 
   useEffect(() => {
-    const _t = setTimeout(() => {  }, 0); return () => clearTimeout(_t);
+    loadData();
   }, []);
 
   const metrics = useMemo(() => {
