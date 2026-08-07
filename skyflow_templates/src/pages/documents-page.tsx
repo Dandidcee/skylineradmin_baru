@@ -78,7 +78,7 @@ function getNextTemplate(templateName: string) {
 }
 
 export function DocumentsPage() {
-  const { documents, loading, error, refresh } = useDocuments();
+  const { documents, loading, isSyncing, error, refresh } = useDocuments();
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [viewMode, setViewMode] = useState<"folder" | "list">("folder");
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
@@ -207,11 +207,17 @@ export function DocumentsPage() {
     <AppLayout title="Dokumen">
       <div className="flex flex-col gap-4">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <p className="text-sm text-text/60">
+          <p className="text-sm text-text/60 flex items-center gap-2">
             {viewMode === "folder" && !selectedFolder 
               ? `${Object.keys(groupedDocuments).length} folder klien` 
               : `${displayedDocuments.length} dokumen`
             }
+            {isSyncing && (
+              <span className="flex items-center gap-1 text-xs text-primary/60">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary/60 animate-pulse" />
+                menyinkronkan...
+              </span>
+            )}
           </p>
           <div className="flex items-center gap-2">
             <div className="flex bg-muted p-1 rounded-md border border-border">
