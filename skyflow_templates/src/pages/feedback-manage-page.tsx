@@ -1,11 +1,12 @@
 import { useState, useEffect, useMemo } from "react";
-import { feedbackService, type Feedback } from "@/services/feedback-service";
+import { feedbackService } from "@/services/feedback-service";
+import type { CustomerFeedback } from "@/services/feedback-service";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { toast } from "sonner";
-import { Eye, Trash2, CheckCircle, XCircle, MessageSquareQuote, Star, MessageSquare } from "lucide-react";
+import { Eye, Trash2, MessageSquareQuote, Star, MessageSquare } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -20,18 +21,18 @@ import {
 } from "@/components/ui/alert-dialog";
 
 export function FeedbackManagePage() {
-  const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
+  const [feedbacks, setFeedbacks] = useState<CustomerFeedback[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedFeedback, setSelectedFeedback] = useState<Feedback | null>(null);
+  const [selectedFeedback, setSelectedFeedback] = useState<CustomerFeedback | null>(null);
 
   // Filters
-  const [filterStatus, setFilterStatus] = useState<"all" | "approved" | "pending">("all");
+  const [filterType, setFilterType] = useState<string>("all");
   const [filterRating, setFilterRating] = useState<string>("all");
 
   const fetchFeedbacks = async () => {
     setIsLoading(true);
     try {
-      const data = await feedbackService.getAllFeedbacks();
+      const data = await feedbackService.getFeedbacks();
       setFeedbacks(data);
     } catch (error: any) {
       toast.error(error.message || "Gagal mengambil data testimoni.");
@@ -54,33 +55,22 @@ export function FeedbackManagePage() {
     }
   };
 
-  const handleToggleStatus = async (id: string, currentStatus: boolean) => {
-    try {
-      await feedbackService.updateFeedbackStatus(id, !currentStatus);
-      toast.success(currentStatus ? "Testimoni disembunyikan dari publik." : "Testimoni berhasil dipublish.");
-      fetchFeedbacks();
-    } catch (error: any) {
-      toast.error(error.message || "Gagal mengubah status testimoni.");
-    }
-  };
-
   const stats = useMemo(() => ({
     total: feedbacks.length,
-    approved: feedbacks.filter(f => f.isApproved).length,
-    pending: feedbacks.filter(f => !f.isApproved).length,
+    testimoni: feedbacks.filter(f => f.type === "Testimoni").length,
+    keluhan: feedbacks.filter(f => f.type === "Keluhan").length,
     avgRating: feedbacks.length > 0 
-      ? (feedbacks.reduce((acc, curr) => acc + curr.rating, 0) / feedbacks.length).toFixed(1) 
+      ? (feedbacks.reduce((acc, curr) => acc + (curr.rating || 0), 0) / feedbacks.filter(f => f.rating).length || 1).toFixed(1) 
       : "0",
   }), [feedbacks]);
 
   const filtered = useMemo(() => {
     return feedbacks.filter(f => {
-      if (filterStatus === "approved" && !f.isApproved) return false;
-      if (filterStatus === "pending" && f.isApproved) return false;
+      if (filterType !== "all" && f.type !== filterType) return false;
       if (filterRating !== "all" && f.rating !== parseInt(filterRating)) return false;
       return true;
     });
-  }, [feedbacks, filterStatus, filterRating]);
+  }, [feedbacks, filterType, filterRating]);
 
   return (
     <AppLayout title="Kelola Testimoni">
@@ -89,16 +79,16 @@ export function FeedbackManagePage() {
         {/* Header */}
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-text">Testimoni & Ulasan</h2>
-            <p className="text-sm sm:text-base text-text/60 mt-1">Kelola testimoni dari klien atau member untuk ditampilkan di halaman publik.</p>
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-text">Testimoni & Keluhan</h2>
+            <p className="text-sm sm:text-base text-text/60 mt-1">Kelola masukan dari pelanggan.</p>
           </div>
         </div>
 
         {/* Stat Cards */}
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-          <StatCard label="Total Testimoni" value={String(stats.total)} icon={MessageSquareQuote} index={0} />
-          <StatCard label="Menunggu Persetujuan" value={String(stats.pending)} icon={MessageSquare} index={1} />
-          <StatCard label="Dipublish" value={String(stats.approved)} icon={CheckCircle} index={2} />
+          <StatCard label="Total Masukan" value={String(stats.total)} icon={MessageSquareQuote} index={0} />
+          <StatCard label="Testimoni" value={String(stats.testimoni)} icon={Star} index={1} />
+          <StatCard label="Keluhan" value={String(stats.keluhan)} icon={MessageSquare} index={2} />
           <StatCard label="Rata-rata Rating" value={stats.avgRating} icon={Star} index={3} />
         </div>
 
@@ -106,13 +96,13 @@ export function FeedbackManagePage() {
         <Card className="p-4 border border-border bg-card shadow-sm space-y-4">
           <div className="flex flex-wrap gap-3 items-center">
             <select
-              value={filterStatus}
-              onChange={e => setFilterStatus(e.target.value as any)}
+              value={filterType}
+              onChange={e => setFilterType(e.target.value)}
               className="rounded-md border border-border bg-card text-text text-sm px-3 py-1.5 outline-none focus:border-primary transition-colors"
             >
-              <option value="all">Semua Status</option>
-              <option value="approved">Dipublish</option>
-              <option value="pending">Menunggu Persetujuan</option>
+              <option value="all">Semua Tipe</option>
+              <option value="Testimoni">Testimoni</option>
+              <option value="Keluhan">Keluhan</option>
             </select>
 
             <select
@@ -141,10 +131,10 @@ export function FeedbackManagePage() {
               <thead className="bg-muted/30 text-text/60">
                 <tr>
                   <th className="px-4 py-3 font-medium whitespace-nowrap">Tanggal</th>
-                  <th className="px-4 py-3 font-medium whitespace-nowrap">Nama & Peran</th>
+                  <th className="px-4 py-3 font-medium whitespace-nowrap">Nama & No HP</th>
+                  <th className="px-4 py-3 font-medium whitespace-nowrap">Tipe</th>
                   <th className="px-4 py-3 font-medium whitespace-nowrap">Rating</th>
-                  <th className="px-4 py-3 font-medium whitespace-nowrap min-w-[200px]">Ulasan</th>
-                  <th className="px-4 py-3 font-medium whitespace-nowrap">Status Publik</th>
+                  <th className="px-4 py-3 font-medium whitespace-nowrap min-w-[200px]">Pesan</th>
                   <th className="px-4 py-3 font-medium text-right whitespace-nowrap">Aksi</th>
                 </tr>
               </thead>
@@ -167,40 +157,23 @@ export function FeedbackManagePage() {
                       </td>
                       <td className="px-4 py-3 font-medium text-text">
                         <div>{item.name}</div>
-                        {item.role && <div className="text-xs text-text/50 font-normal">{item.role}</div>}
+                        {item.phone && <div className="text-xs text-text/50 font-normal">{item.phone}</div>}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap text-text/70">
+                        {item.type}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
                         <div className="flex gap-0.5">
-                          {[1, 2, 3, 4, 5].map(star => (
-                            <Star key={star} className={`w-3 h-3 ${star <= item.rating ? "fill-amber-400 text-amber-400" : "text-muted-foreground/30"}`} />
-                          ))}
+                          {item.rating ? [1, 2, 3, 4, 5].map(star => (
+                            <Star key={star} className={`w-3 h-3 ${star <= item.rating! ? "fill-amber-400 text-amber-400" : "text-muted-foreground/30"}`} />
+                          )) : "-"}
                         </div>
                       </td>
                       <td className="px-4 py-3 text-text/70">
                         <div className="line-clamp-2 italic">"{item.message}"</div>
                       </td>
-                      <td className="px-4 py-3 whitespace-nowrap">
-                        {item.isApproved ? (
-                          <span className="inline-flex items-center rounded-full bg-green-500/10 px-2.5 py-0.5 text-xs font-semibold text-green-500">
-                            Dipublish
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center rounded-full bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold text-amber-600">
-                            Pending
-                          </span>
-                        )}
-                      </td>
                       <td className="px-4 py-3 text-right">
                         <div className="flex items-center justify-end gap-1">
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            title={item.isApproved ? "Sembunyikan dari Publik" : "Publish ke Publik"}
-                            className={`h-8 w-8 p-0 ${item.isApproved ? 'text-amber-500 hover:text-amber-600 hover:bg-amber-500/10' : 'text-green-500 hover:text-green-600 hover:bg-green-500/10'}`} 
-                            onClick={() => handleToggleStatus(item.id, item.isApproved)}
-                          >
-                            {item.isApproved ? <XCircle className="h-4 w-4" /> : <CheckCircle className="h-4 w-4" />}
-                          </Button>
                           <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => setSelectedFeedback(item)}>
                             <Eye className="h-4 w-4" />
                           </Button>
@@ -212,9 +185,9 @@ export function FeedbackManagePage() {
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                               <AlertDialogHeader>
-                                <AlertDialogTitle>Hapus Testimoni?</AlertDialogTitle>
+                                <AlertDialogTitle>Hapus Data?</AlertDialogTitle>
                                 <AlertDialogDescription>
-                                  Testimoni dari <b>{item.name}</b> akan dihapus permanen. Aksi ini tidak dapat dibatalkan.
+                                  Data dari <b>{item.name}</b> akan dihapus permanen. Aksi ini tidak dapat dibatalkan.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
@@ -240,20 +213,22 @@ export function FeedbackManagePage() {
       <Dialog open={!!selectedFeedback} onOpenChange={(open) => !open && setSelectedFeedback(null)}>
         <DialogContent className="max-w-xl">
           <DialogHeader>
-            <DialogTitle>Detail Testimoni</DialogTitle>
+            <DialogTitle>Detail {selectedFeedback?.type}</DialogTitle>
           </DialogHeader>
           {selectedFeedback && (
             <div className="space-y-6 mt-2">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-bold text-lg text-text">{selectedFeedback.name}</h3>
-                  {selectedFeedback.role && <p className="text-sm text-text/60">{selectedFeedback.role}</p>}
+                  {selectedFeedback.phone && <p className="text-sm text-text/60">{selectedFeedback.phone}</p>}
                 </div>
-                <div className="flex gap-1 bg-amber-50 px-2 py-1 rounded-full">
-                  {[1, 2, 3, 4, 5].map(star => (
-                    <Star key={star} className={`w-4 h-4 ${star <= selectedFeedback.rating ? "fill-amber-400 text-amber-400" : "text-black/10"}`} />
-                  ))}
-                </div>
+                {selectedFeedback.rating && (
+                  <div className="flex gap-1 bg-amber-50 px-2 py-1 rounded-full">
+                    {[1, 2, 3, 4, 5].map(star => (
+                      <Star key={star} className={`w-4 h-4 ${star <= selectedFeedback.rating! ? "fill-amber-400 text-amber-400" : "text-black/10"}`} />
+                    ))}
+                  </div>
+                )}
               </div>
               
               <div className="p-4 bg-muted/30 rounded-xl relative">
@@ -267,28 +242,9 @@ export function FeedbackManagePage() {
                 <div className="text-xs text-text/50">
                   Dikirim pada {new Date(selectedFeedback.createdAt).toLocaleString('id-ID')}
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-text/70">Status:</span>
-                  {selectedFeedback.isApproved ? (
-                    <span className="inline-flex items-center rounded-full bg-green-500/10 px-2.5 py-0.5 text-xs font-semibold text-green-500">
-                      Dipublish
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center rounded-full bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold text-amber-600">
-                      Menunggu Persetujuan
-                    </span>
-                  )}
+                <div className="text-sm font-medium text-text/70">
+                  Tipe: {selectedFeedback.type}
                 </div>
-              </div>
-
-              <div className="flex gap-2 w-full pt-2">
-                <Button 
-                  variant="outline" 
-                  className="w-full flex-1"
-                  onClick={() => handleToggleStatus(selectedFeedback.id, selectedFeedback.isApproved)}
-                >
-                  {selectedFeedback.isApproved ? "Sembunyikan dari Publik" : "Publish Testimoni"}
-                </Button>
               </div>
             </div>
           )}
