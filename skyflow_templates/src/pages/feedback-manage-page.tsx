@@ -55,6 +55,16 @@ export function FeedbackManagePage() {
     }
   };
 
+  const handleToggleApprove = async (id: string, currentStatus: boolean) => {
+    try {
+      await feedbackService.toggleApprove(id, !currentStatus);
+      toast.success(!currentStatus ? "Testimoni ditampilkan di publik." : "Testimoni disembunyikan.");
+      fetchFeedbacks();
+    } catch (error: any) {
+      toast.error(error.message || "Gagal memperbarui status.");
+    }
+  };
+
   const stats = useMemo(() => ({
     total: feedbacks.length,
     testimoni: feedbacks.filter(f => f.type === "Testimoni").length,
@@ -160,7 +170,14 @@ export function FeedbackManagePage() {
                         {item.phone && <div className="text-xs text-text/50 font-normal">{item.phone}</div>}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-text/70">
-                        {item.type}
+                        <div className="flex flex-col gap-1">
+                          <span>{item.type}</span>
+                          {item.type === "Testimoni" && (
+                            <span className={`text-[10px] px-2 py-0.5 rounded-full w-fit ${item.isApproved ? "bg-green-500/10 text-green-500 border border-green-500/20" : "bg-zinc-500/10 text-zinc-500 border border-zinc-500/20"}`}>
+                              {item.isApproved ? "Publik" : "Disembunyikan"}
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
                         <div className="flex gap-0.5">
@@ -174,6 +191,16 @@ export function FeedbackManagePage() {
                       </td>
                       <td className="px-4 py-3 text-right">
                         <div className="flex items-center justify-end gap-1">
+                          {item.type === "Testimoni" && (
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className={`h-8 px-2 text-xs border ${item.isApproved ? 'border-orange-500/20 text-orange-500 hover:bg-orange-500/10' : 'border-green-500/20 text-green-500 hover:bg-green-500/10'}`} 
+                              onClick={() => handleToggleApprove(item.id, item.isApproved)}
+                            >
+                              {item.isApproved ? "Sembunyikan" : "Setujui"}
+                            </Button>
+                          )}
                           <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => setSelectedFeedback(item)}>
                             <Eye className="h-4 w-4" />
                           </Button>

@@ -7,6 +7,7 @@ export interface CustomerFeedback {
   type: string;
   message: string;
   rating: number | null;
+  isApproved: boolean;
   createdAt: string;
 }
 
@@ -25,6 +26,13 @@ export const feedbackService = {
   deleteFeedback: async (id: string) => {
     return fetchApi(`/feedback/${id}`, {
       method: 'DELETE',
+    });
+  },
+
+  toggleApprove: async (id: string, isApproved: boolean) => {
+    return fetchApi(`/feedback/${id}/approve`, {
+      method: 'PATCH',
+      body: JSON.stringify({ isApproved }),
     });
   }
 };

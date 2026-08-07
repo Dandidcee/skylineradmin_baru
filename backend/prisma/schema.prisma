@@ -236,5 +236,6 @@ model CustomerFeedback {
   type      String   // 'Testimoni', 'Keluhan', 'Pengaduan'
   message   String
   rating    Int?     // 1-5, opsional untuk testimoni
+  isApproved Boolean @default(false)
   createdAt DateTime @default(now())
 }
