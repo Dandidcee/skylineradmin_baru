@@ -260,7 +260,7 @@ export function FeedbackManagePage() {
               
               <div className="p-4 bg-muted/30 rounded-xl relative">
                 <MessageSquareQuote className="w-8 h-8 text-primary/20 absolute top-2 right-2" />
-                <p className="text-text/80 italic relative z-10 leading-relaxed">
+                <p className="text-text/80 italic relative z-10 leading-relaxed pr-10">
                   "{selectedFeedback.message}"
                 </p>
               </div>
