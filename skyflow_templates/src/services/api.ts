@@ -131,3 +131,20 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
 
   return data;
 }
+
+/* ── Public fetch (tanpa token, tanpa redirect ke login) ── */
+export async function fetchPublic(endpoint: string, options: RequestInit = {}) {
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+    ...options.headers,
+  };
+
+  const response = await fetch(`${BASE_URL}${endpoint}`, { ...options, headers });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => null);
+    throw new Error(err?.error || 'Request Failed');
+  }
+
+  return response.json();
+}

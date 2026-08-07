@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { authenticateToken } from '../middleware/auth';
+import { feedbackSubmitLimiter } from '../middleware/rate-limit';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -24,7 +25,7 @@ router.get('/public', async (req, res) => {
 });
 
 // POST /api/feedback (Public route for customers to submit feedback)
-router.post('/', async (req, res) => {
+router.post('/', feedbackSubmitLimiter, async (req, res) => {
   try {
     const { name, companyName, phone, type, message, rating } = req.body;
 

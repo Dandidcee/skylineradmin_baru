@@ -16,6 +16,7 @@ import publicRoutes from './routes/public.routes';
 import credentialRoutes from './routes/credential.routes';
 import formRoutes from './routes/form.routes';
 import feedbackRoutes from './routes/feedback.routes';
+import { globalLimiter } from './middleware/rate-limit';
 dotenv.config();
 
 const app = express();
@@ -24,6 +25,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use('/api', globalLimiter); // Global rate limit: 200 req/15min per IP
 
 // Register API Routes
 app.use('/api/auth', authRoutes);

@@ -1,4 +1,4 @@
-import { fetchApi } from './api';
+import { fetchApi, fetchPublic } from './api';
 
 export interface CustomerFeedback {
   id: string;
@@ -14,7 +14,7 @@ export interface CustomerFeedback {
 
 export const feedbackService = {
   submitFeedback: async (data: Omit<CustomerFeedback, 'id' | 'createdAt'>) => {
-    return fetchApi('/feedback', {
+    return fetchPublic('/feedback', {
       method: 'POST',
       body: JSON.stringify(data),
     });
@@ -25,7 +25,7 @@ export const feedbackService = {
   },
 
   getPublicFeedbacks: async (): Promise<CustomerFeedback[]> => {
-    return fetchApi('/feedback/public');
+    return fetchPublic('/feedback/public');
   },
 
   deleteFeedback: async (id: string) => {

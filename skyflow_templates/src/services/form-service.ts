@@ -1,4 +1,4 @@
-import { fetchApi } from "./api";
+import { fetchApi, fetchPublic } from "./api";
 
 export interface SurveyResponse {
   id: string;
@@ -19,7 +19,7 @@ export interface SurveyResponse {
 
 export const formService = {
   submitForm: async (data: Partial<SurveyResponse>) => {
-    return fetchApi("/forms/submit", {
+    return fetchPublic("/forms/submit", {
       method: "POST",
       body: JSON.stringify(data),
     });

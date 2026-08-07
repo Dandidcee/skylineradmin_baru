@@ -1,11 +1,12 @@
 import { Router } from "express";
 import prisma from '../config/db';
 import { authenticateToken } from "../middleware/auth";
+import { formSubmitLimiter } from "../middleware/rate-limit";
 
 const router = Router();
 
 // Public route to submit a form response
-router.post("/submit", async (req, res) => {
+router.post("/submit", formSubmitLimiter, async (req, res) => {
   try {
     const {
       name,
