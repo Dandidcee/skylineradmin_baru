@@ -12,23 +12,65 @@ export function removeToken() {
   localStorage.removeItem('token');
 }
 
-// Global API Cache
-const apiCache = new Map<string, { data: any, timestamp: number }>();
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+// ── Persistent API Cache (localStorage) ──────────────────────────────────
+// In-memory cache: gunakan sebagai "hot cache" dalam satu sesi
+const memCache = new Map<string, { data: any; timestamp: number }>();
+const MEM_TTL  = 60 * 1000;          // 1 menit — hot cache
+const LS_TTL   = 10 * 60 * 1000;     // 10 menit — persistent cache
+const LS_PREFIX = 'skyflow_api_';
+
+function lsGet(endpoint: string): any | null {
+  try {
+    const raw = localStorage.getItem(LS_PREFIX + endpoint);
+    if (!raw) return null;
+    const { data, ts } = JSON.parse(raw);
+    if (Date.now() - ts > LS_TTL) {
+      localStorage.removeItem(LS_PREFIX + endpoint);
+      return null;
+    }
+    return data;
+  } catch { return null; }
+}
+
+function lsSet(endpoint: string, data: any) {
+  try {
+    // Jangan cache fileUrl — terlalu besar
+    const safeData = Array.isArray(data)
+      ? data.map(({ fileUrl: _f, clientSignature: _c, ...rest }: any) => rest)
+      : data;
+    localStorage.setItem(LS_PREFIX + endpoint, JSON.stringify({ data: safeData, ts: Date.now() }));
+  } catch { /* localStorage penuh — skip */ }
+}
+
+function lsClear() {
+  try {
+    Object.keys(localStorage)
+      .filter(k => k.startsWith(LS_PREFIX))
+      .forEach(k => localStorage.removeItem(k));
+  } catch { /* ignore */ }
+}
 
 export async function fetchApi(endpoint: string, options: RequestInit = {}) {
   const token = getToken();
   const isGet = !options.method || options.method.toUpperCase() === 'GET';
-  
-  // Return cached data for GET requests if valid
+
   if (isGet) {
-    const cached = apiCache.get(endpoint);
-    if (cached && (Date.now() - cached.timestamp < CACHE_TTL)) {
-      return cached.data;
+    // 1. Coba hot cache (in-memory) dulu — paling cepat
+    const mem = memCache.get(endpoint);
+    if (mem && Date.now() - mem.timestamp < MEM_TTL) {
+      return mem.data;
+    }
+    // 2. Coba persistent cache (localStorage) — cepat, lintas refresh
+    const ls = lsGet(endpoint);
+    if (ls !== null) {
+      // Simpan juga ke memCache supaya request berikutnya lebih cepat lagi
+      memCache.set(endpoint, { data: ls, timestamp: Date.now() });
+      return ls;
     }
   } else {
-    // Invalidate entire cache on POST, PUT, DELETE to ensure fresh data
-    apiCache.clear();
+    // Mutasi → invalidate semua cache
+    memCache.clear();
+    lsClear();
   }
 
   const headers = {
@@ -54,10 +96,10 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
   }
 
   const data = await response.json();
-  
-  // Cache successful GET responses
+
   if (isGet) {
-    apiCache.set(endpoint, { data, timestamp: Date.now() });
+    memCache.set(endpoint, { data, timestamp: Date.now() });
+    lsSet(endpoint, data);
   }
 
   return data;
