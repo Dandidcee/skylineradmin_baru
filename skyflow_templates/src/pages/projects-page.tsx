@@ -323,7 +323,8 @@ export function ProjectsPage() {
   };
 
   useEffect(() => {
-    loadData();
+    const t = setTimeout(() => { loadData(); }, 0);
+    return () => clearTimeout(t);
   }, []);
 
   const sensors = useSensors(

@@ -69,7 +69,8 @@ export function SettingsPage() {
   };
 
   useEffect(() => {
-    loadUsers();
+    const t = setTimeout(() => { loadUsers(); }, 0);
+    return () => clearTimeout(t);
   }, []);
 
   const handleOpenModal = (user?: User) => {

@@ -29,7 +29,8 @@ export function RevisionsPage() {
   };
 
   useEffect(() => {
-    loadData();
+    const t = setTimeout(() => { loadData(); }, 0);
+    return () => clearTimeout(t);
   }, []);
 
   // Derive unique clients from projects
