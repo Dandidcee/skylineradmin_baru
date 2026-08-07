@@ -125,7 +125,7 @@ export function AppSidebar() {
     if (userData) {
       try { 
         const parsed = JSON.parse(userData);
-        const _t = setTimeout(() => {  }, 0); return () => clearTimeout(_t);
+        setUser(parsed);
         setEditName(parsed.name || "");
         setEditPhotoUrl(parsed.photoUrl || "");
       } catch (error) { 
