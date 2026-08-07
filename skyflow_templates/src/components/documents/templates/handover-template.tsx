@@ -89,7 +89,7 @@ export function HandoverTemplate() {
   const handleSave = async (isPrint = false) => {
     setIsSaving(true);
     try {
-      const snap = createDocumentSnapshot(docNo);
+      const snap = await createDocumentSnapshot(docNo);
       await generateDocument({
         title: docNo,
         template: "Handover",

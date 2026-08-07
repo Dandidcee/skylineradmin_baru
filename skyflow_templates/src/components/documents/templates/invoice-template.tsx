@@ -135,7 +135,7 @@ export function InvoiceTemplate() {
   const handleSave = async (isPrint = false) => {
     setIsSaving(true);
     try {
-      const snap = createDocumentSnapshot(invNo);
+      const snap = await createDocumentSnapshot(invNo);
       await generateDocument({
         title: invNo,
         template: "Invoice",

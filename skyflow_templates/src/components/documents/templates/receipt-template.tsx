@@ -98,7 +98,7 @@ export function ReceiptTemplate() {
   const handleSave = async (isPrint = false) => {
     setIsSaving(true);
     try {
-      const snap = createDocumentSnapshot(recNo);
+      const snap = await createDocumentSnapshot(recNo);
       await generateDocument({
         title: recNo,
         template: "Payment Receipt",

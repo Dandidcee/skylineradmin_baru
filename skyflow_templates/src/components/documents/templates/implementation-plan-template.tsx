@@ -85,7 +85,7 @@ export function ImplementationPlanTemplate() {
   const handleSaveAndPrint = async () => {
     setIsSaving(true);
     try {
-      const snap = createDocumentSnapshot(docNo);
+      const snap = await createDocumentSnapshot(docNo);
       await generateDocument({
         title: docNo,
         template: "Implementation Plan",
