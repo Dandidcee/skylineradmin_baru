@@ -38,11 +38,11 @@ app.use('/api/finances', financeRoutes);
 app.use('/api/payments', financeRoutes); 
 app.use('/api/stats', statsRoutes);
 app.use('/api/public', publicRoutes);
-app.use('/api', taskRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/credentials', credentialRoutes);
 app.use('/api/forms', formRoutes);
 app.use('/api/feedback', feedbackRoutes);
+app.use('/api', taskRoutes); // catch-all terakhir: tasks, calendar, todos, revisions, maintenance
 app.listen(Number(PORT), '0.0.0.0', () => {
   console.log(`Server running on http://0.0.0.0:${PORT}`);
 });
