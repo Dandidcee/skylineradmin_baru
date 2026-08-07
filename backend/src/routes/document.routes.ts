@@ -16,7 +16,6 @@ router.get('/', async (req, res) => {
         status: true,
         sizeKb: true,
         createdAt: true,
-        updatedAt: true,
         clientId: true,
         projectId: true,
         creatorId: true,
@@ -28,17 +27,16 @@ router.get('/', async (req, res) => {
       orderBy: { createdAt: 'desc' } 
     });
 
-    // Buat ETag dari fingerprint ringan: gabungan id+updatedAt semua dokumen
-    const fingerprint = docs.map(d => `${d.id}:${(d as any).updatedAt ?? d.createdAt}`).join('|');
+    // ETag dari fingerprint: id + status + clientSignature (cukup untuk deteksi perubahan)
+    const fingerprint = docs.map(d => `${d.id}:${d.status}:${d.clientSignature ?? ''}`).join('|');
     const etag = `"${createHash('md5').update(fingerprint).digest('hex')}"`;
 
-    // Kalau client kirim If-None-Match dan cocok → 304, ZERO data transfer
     if (req.headers['if-none-match'] === etag) {
       return res.status(304).end();
     }
 
     res.setHeader('ETag', etag);
-    res.setHeader('Cache-Control', 'private, no-cache'); // browser wajib cek ETag sebelum pakai cache
+    res.setHeader('Cache-Control', 'private, no-cache');
     res.json(docs);
   } catch (error) {
     console.error('Error fetching documents:', error);

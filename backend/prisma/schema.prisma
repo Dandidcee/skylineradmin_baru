@@ -90,11 +90,10 @@ model Payment {
 model Document {
   id        String   @id @default(uuid())
   title     String
-  template  String   // E.g., 'Implementation Plan', 'Invoice', etc. (Acting as type)
+  template  String
   status    String
   sizeKb    Int
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
   // New fields
   fileUrl   String?
