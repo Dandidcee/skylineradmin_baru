@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import templateCssRaw from "@/components/documents/templates/template.css?raw";
 import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -87,10 +88,16 @@ export function SharedDocumentPage() {
             // Disable all contenteditable elements to prevent client edits
             decoded = decoded.replace(/contenteditable(="[^"]*")?/gi, 'contenteditable="false"');
             
-            // Selalu hapus base tag bawaan (kalau ada dari environment sebelumnya)
+            // Hapus semua <link rel="stylesheet"> — CORS blocked di iframe srcDoc
+            decoded = decoded.replace(/<link[^>]+rel=["']stylesheet["'][^>]*>/gi, '');
+            decoded = decoded.replace(/<link[^>]+href=["'][^"']+\.css["'][^>]*>/gi, '');
+
+            // Hapus base tag lama, selalu inject yang fresh
             decoded = decoded.replace(/<base href="[^"]*">/gi, '');
-            // Dan selalu suntik base tag yang sesuai dengan origin SAAT INI
-            decoded = decoded.replace('</head>', `<base href="${window.location.origin}"></head>`);
+
+            // Inject template CSS langsung sebagai <style> agar tidak bergantung CORS
+            const injectStyle = `<style>${templateCssRaw}</style>`;
+            decoded = decoded.replace('</head>', `${injectStyle}\n<base href="${window.location.origin}">\n</head>`);
             
             setHtmlContent(decoded);
           } catch (e) {
