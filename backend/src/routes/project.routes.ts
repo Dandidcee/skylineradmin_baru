@@ -13,7 +13,17 @@ router.get('/', async (req, res) => {
       include: { 
         client: true, 
         documents: {
-          omit: { fileUrl: true, clientSignature: true }
+          select: {
+            id: true,
+            title: true,
+            template: true,
+            status: true,
+            sizeKb: true,
+            createdAt: true,
+            clientId: true,
+            projectId: true,
+            creatorId: true
+          }
         }, 
         tasks: true, 
         finances: true, 

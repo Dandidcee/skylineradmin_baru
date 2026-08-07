@@ -7,8 +7,20 @@ router.use(authenticateToken);
 
 router.get('/', async (req, res) => {
   const docs = await prisma.document.findMany({ 
-    omit: { fileUrl: true, clientSignature: true },
-    include: { client: true, project: true, creator: true },
+    select: {
+      id: true,
+      title: true,
+      template: true,
+      status: true,
+      sizeKb: true,
+      createdAt: true,
+      clientId: true,
+      projectId: true,
+      creatorId: true,
+      client: true,
+      project: true,
+      creator: true
+    },
     orderBy: { createdAt: 'desc' } 
   });
   res.json(docs);
