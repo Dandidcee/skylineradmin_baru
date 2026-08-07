@@ -234,7 +234,7 @@ export function PublicFeedbackPage() {
                   </div>
 
                   <div className="flex gap-3 mt-8">
-                    <Button type="button" onClick={prevStep} variant="outline" className="flex-1 py-6 border-border text-text hover:bg-muted">
+                    <Button type="button" onClick={prevStep} onPointerDown={(e) => { e.preventDefault(); prevStep(); }} variant="outline" className="flex-1 py-6 border-border text-text hover:bg-muted">
                       <ArrowLeft className="w-4 h-4 mr-2" /> Kembali
                     </Button>
                     <Button type="submit" disabled={isSubmitting} className="flex-[2] bg-primary hover:bg-primary/90 text-primary-foreground py-6 font-semibold">
