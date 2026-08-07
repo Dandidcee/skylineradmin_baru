@@ -1,48 +1,46 @@
 const BASE_URL = '/api';
 
-export function getToken() {
-  return localStorage.getItem('token');
-}
+export function getToken() { return localStorage.getItem('token'); }
+export function setToken(token: string) { localStorage.setItem('token', token); }
+export function removeToken() { localStorage.removeItem('token'); }
 
-export function setToken(token: string) {
-  localStorage.setItem('token', token);
-}
+// ─────────────────────────────────────────────────────────────
+//  TWO-TIER CACHE:
+//  Tier 1 — memCache   : in-memory, ultra-cepat, satu sesi
+//  Tier 2 — localStorage: persist antar refresh, 30 menit
+//  ETag   : kalau server kasih ETag → simpan, kirim If-None-Match
+//           kalau server balas 304  → pakai cache, 0 byte dikirim
+// ─────────────────────────────────────────────────────────────
 
-export function removeToken() {
-  localStorage.removeItem('token');
-}
+const MEM_TTL   = 2  * 60 * 1000;   // 2 menit
+const LS_TTL    = 30 * 60 * 1000;   // 30 menit
+const LS_PREFIX = 'sfa_';           // skyflow_api cache prefix
 
-// ── Persistent API Cache (localStorage) ──────────────────────────────────
-// In-memory cache: gunakan sebagai "hot cache" dalam satu sesi
-const memCache = new Map<string, { data: any; timestamp: number }>();
-const MEM_TTL  = 60 * 1000;          // 1 menit — hot cache
-const LS_TTL   = 10 * 60 * 1000;     // 10 menit — persistent cache
-const LS_PREFIX = 'skyflow_api_';
+type CacheEntry = { data: any; etag?: string; ts: number };
+const memCache = new Map<string, CacheEntry>();
 
-function lsGet(endpoint: string): any | null {
+/* ── localStorage helpers ── */
+function lsRead(key: string): CacheEntry | null {
   try {
-    const raw = localStorage.getItem(LS_PREFIX + endpoint);
+    const raw = localStorage.getItem(LS_PREFIX + key);
     if (!raw) return null;
-    const { data, ts } = JSON.parse(raw);
-    if (Date.now() - ts > LS_TTL) {
-      localStorage.removeItem(LS_PREFIX + endpoint);
-      return null;
-    }
-    return data;
+    const entry: CacheEntry = JSON.parse(raw);
+    if (Date.now() - entry.ts > LS_TTL) { localStorage.removeItem(LS_PREFIX + key); return null; }
+    return entry;
   } catch { return null; }
 }
 
-function lsSet(endpoint: string, data: any) {
+function lsWrite(key: string, entry: CacheEntry) {
   try {
-    // Jangan cache fileUrl — terlalu besar
-    const safeData = Array.isArray(data)
-      ? data.map(({ fileUrl: _f, clientSignature: _c, ...rest }: any) => rest)
-      : data;
-    localStorage.setItem(LS_PREFIX + endpoint, JSON.stringify({ data: safeData, ts: Date.now() }));
-  } catch { /* localStorage penuh — skip */ }
+    // Strip field besar sebelum disimpan agar localStorage tidak penuh
+    const safeData = Array.isArray(entry.data)
+      ? entry.data.map(({ fileUrl: _a, clientSignature: _b, ...rest }: any) => rest)
+      : entry.data;
+    localStorage.setItem(LS_PREFIX + key, JSON.stringify({ ...entry, data: safeData }));
+  } catch { /* storage full — skip */ }
 }
 
-function lsClear() {
+function lsClearAll() {
   try {
     Object.keys(localStorage)
       .filter(k => k.startsWith(LS_PREFIX))
@@ -50,56 +48,85 @@ function lsClear() {
   } catch { /* ignore */ }
 }
 
+/* ── Main fetch wrapper ── */
 export async function fetchApi(endpoint: string, options: RequestInit = {}) {
-  const token = getToken();
-  const isGet = !options.method || options.method.toUpperCase() === 'GET';
+  const token   = getToken();
+  const isGet   = !options.method || options.method.toUpperCase() === 'GET';
 
   if (isGet) {
-    // 1. Coba hot cache (in-memory) dulu — paling cepat
+    // 1. Hot cache (memory) — < 1 ms
     const mem = memCache.get(endpoint);
-    if (mem && Date.now() - mem.timestamp < MEM_TTL) {
-      return mem.data;
-    }
-    // 2. Coba persistent cache (localStorage) — cepat, lintas refresh
-    const ls = lsGet(endpoint);
-    if (ls !== null) {
-      // Simpan juga ke memCache supaya request berikutnya lebih cepat lagi
-      memCache.set(endpoint, { data: ls, timestamp: Date.now() });
-      return ls;
+    if (mem && Date.now() - mem.ts < MEM_TTL) return mem.data;
+
+    // 2. Persistent cache (localStorage)
+    const ls = lsRead(endpoint);
+    if (ls) {
+      // Pompa ke memCache supaya akses berikutnya lebih cepat
+      memCache.set(endpoint, ls);
+
+      // 3. ETag conditional request — cek server tapi 0 byte kalau tidak berubah
+      try {
+        const condHeaders: HeadersInit = {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          ...(ls.etag ? { 'If-None-Match': ls.etag } : {}),
+        };
+        const condRes = await fetch(`${BASE_URL}${endpoint}`, { headers: condHeaders });
+
+        if (condRes.status === 304) {
+          // Tidak berubah — perpanjang TTL dan kembalikan cache
+          const refreshed: CacheEntry = { ...ls, ts: Date.now() };
+          memCache.set(endpoint, refreshed);
+          lsWrite(endpoint, refreshed);
+          return ls.data;
+        }
+
+        if (condRes.ok) {
+          const fresh = await condRes.json();
+          const etag  = condRes.headers.get('ETag') ?? undefined;
+          const entry: CacheEntry = { data: fresh, etag, ts: Date.now() };
+          memCache.set(endpoint, entry);
+          lsWrite(endpoint, entry);
+          return fresh;
+        }
+        // Kalau error dari conditional req → fallback ke cache
+        return ls.data;
+      } catch {
+        // Offline / network error → pakai cache
+        return ls.data;
+      }
     }
   } else {
-    // Mutasi → invalidate semua cache
+    // Mutasi (POST/PUT/DELETE) → invalidate cache
     memCache.clear();
-    lsClear();
+    lsClearAll();
   }
 
-  const headers = {
+  /* ── Normal (uncached) request ── */
+  const headers: HeadersInit = {
     'Content-Type': 'application/json',
-    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...options.headers,
   };
 
-  const response = await fetch(`${BASE_URL}${endpoint}`, {
-    ...options,
-    headers,
-  });
+  const response = await fetch(`${BASE_URL}${endpoint}`, { ...options, headers });
 
   if (!response.ok) {
     if (response.status === 401) {
       removeToken();
-      if (window.location.pathname !== '/login') {
-        window.location.href = '/login';
-      }
+      if (window.location.pathname !== '/login') window.location.href = '/login';
     }
-    const errorData = await response.json().catch(() => null);
-    throw new Error(errorData?.error || 'API Request Failed');
+    const err = await response.json().catch(() => null);
+    throw new Error(err?.error || 'API Request Failed');
   }
 
   const data = await response.json();
 
   if (isGet) {
-    memCache.set(endpoint, { data, timestamp: Date.now() });
-    lsSet(endpoint, data);
+    const etag  = response.headers.get('ETag') ?? undefined;
+    const entry: CacheEntry = { data, etag, ts: Date.now() };
+    memCache.set(endpoint, entry);
+    lsWrite(endpoint, entry);
   }
 
   return data;

@@ -1,29 +1,49 @@
 import { Router } from 'express';
 import prisma from '../config/db';
 import { authenticateToken } from '../middleware/auth';
+import { createHash } from 'crypto';
 
 const router = Router();
 router.use(authenticateToken);
 
 router.get('/', async (req, res) => {
-  const docs = await prisma.document.findMany({ 
-    select: {
-      id: true,
-      title: true,
-      template: true,
-      status: true,
-      sizeKb: true,
-      createdAt: true,
-      clientId: true,
-      projectId: true,
-      creatorId: true,
-      client: true,
-      project: true,
-      creator: true
-    },
-    orderBy: { createdAt: 'desc' } 
-  });
-  res.json(docs);
+  try {
+    const docs = await prisma.document.findMany({ 
+      select: {
+        id: true,
+        title: true,
+        template: true,
+        status: true,
+        sizeKb: true,
+        createdAt: true,
+        updatedAt: true,
+        clientId: true,
+        projectId: true,
+        creatorId: true,
+        clientSignature: true,
+        client: { select: { id: true, name: true, company: true } },
+        project: { select: { id: true, name: true } },
+        creator: { select: { id: true, name: true } }
+      },
+      orderBy: { createdAt: 'desc' } 
+    });
+
+    // Buat ETag dari fingerprint ringan: gabungan id+updatedAt semua dokumen
+    const fingerprint = docs.map(d => `${d.id}:${(d as any).updatedAt ?? d.createdAt}`).join('|');
+    const etag = `"${createHash('md5').update(fingerprint).digest('hex')}"`;
+
+    // Kalau client kirim If-None-Match dan cocok → 304, ZERO data transfer
+    if (req.headers['if-none-match'] === etag) {
+      return res.status(304).end();
+    }
+
+    res.setHeader('ETag', etag);
+    res.setHeader('Cache-Control', 'private, no-cache'); // browser wajib cek ETag sebelum pakai cache
+    res.json(docs);
+  } catch (error) {
+    console.error('Error fetching documents:', error);
+    res.status(500).json({ error: 'Failed to fetch documents' });
+  }
 });
 
 router.get('/:id/file', async (req, res) => {

@@ -94,6 +94,7 @@ model Document {
   status    String
   sizeKb    Int
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // New fields
   fileUrl   String?
