@@ -136,7 +136,7 @@ export function MaintenancePage() {
                   setSelectedClientId(e.target.value);
                   setSelectedProjectId("");
                 }}
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary transition-colors text-slate-900"
+                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary transition-colors text-text"
               >
                 <option value="">-- Pilih Klien --</option>
                 {clients.map(c => (
@@ -155,7 +155,7 @@ export function MaintenancePage() {
                 value={selectedProjectId}
                 onChange={(e) => setSelectedProjectId(e.target.value)}
                 disabled={!selectedClientId}
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary transition-colors disabled:opacity-50 text-slate-900"
+                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary transition-colors disabled:opacity-50 text-text"
               >
                 <option value="">-- Pilih Proyek --</option>
                 {clientProjects.map(p => (
@@ -231,7 +231,7 @@ export function MaintenancePage() {
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-semibold text-text/70">Kategori</label>
                     <select 
-                      className="w-full text-sm p-2 border border-input rounded-md outline-none focus:border-primary bg-background text-slate-900"
+                      className="w-full text-sm p-2 border border-input rounded-md outline-none focus:border-primary bg-background text-text"
                       value={newType}
                       onChange={(e) => setNewType(e.target.value)}
                     >
@@ -245,7 +245,7 @@ export function MaintenancePage() {
                     <input 
                       required
                       placeholder="Contoh: VPS DigitalOcean" 
-                      className="w-full text-sm p-2 border border-input rounded-md outline-none focus:border-primary bg-background"
+                      className="w-full text-sm p-2 border border-input rounded-md outline-none focus:border-primary bg-background text-text placeholder:text-text/40"
                       value={newName}
                       onChange={(e) => setNewName(e.target.value)}
                     />
@@ -256,7 +256,7 @@ export function MaintenancePage() {
                       required
                       type="text"
                       placeholder="Contoh: 150.000" 
-                      className="w-full text-sm p-2 border border-input rounded-md outline-none focus:border-primary bg-background font-medium"
+                      className="w-full text-sm p-2 border border-input rounded-md outline-none focus:border-primary bg-background text-text font-medium placeholder:text-text/40"
                       value={newAmount ? new Intl.NumberFormat('id-ID').format(Number(newAmount)) : ""}
                       onChange={(e) => setNewAmount(e.target.value.replace(/\D/g, ''))}
                     />
@@ -266,7 +266,7 @@ export function MaintenancePage() {
                     <input 
                       required
                       type="date"
-                      className="w-full text-sm p-2 border border-input rounded-md outline-none focus:border-primary bg-background"
+                      className="w-full text-sm p-2 border border-input rounded-md outline-none focus:border-primary bg-background text-text"
                       value={newDueDate}
                       onChange={(e) => setNewDueDate(e.target.value)}
                     />
@@ -275,7 +275,7 @@ export function MaintenancePage() {
                     <label className="text-xs font-semibold text-text/70">Catatan Detail (Opsional)</label>
                     <textarea 
                       placeholder="Tuliskan keterangan..." 
-                      className="w-full text-sm p-2 border border-input rounded-md resize-none h-20 outline-none focus:border-primary bg-background"
+                      className="w-full text-sm p-2 border border-input rounded-md resize-none h-20 outline-none focus:border-primary bg-background text-text placeholder:text-text/40"
                       value={newNotes}
                       onChange={(e) => setNewNotes(e.target.value)}
                     />

@@ -261,22 +261,22 @@ export function CredentialsPage() {
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
-                <label className="text-sm font-semibold">Nama Kredensial *</label>
+                <label className="text-sm font-semibold text-text">Nama Kredensial *</label>
                 <input
                   value={name}
                   onChange={e => setName(e.target.value)}
-                  className="h-10 w-full rounded-md border border-input px-3 text-sm focus:outline-none focus:border-primary"
+                  className="h-10 w-full rounded-md border border-input bg-background text-text px-3 text-sm focus:outline-none focus:border-primary"
                   required
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <label className="text-sm font-semibold text-slate-600">Kaitkan dengan Klien (Opsional)</label>
+                  <label className="text-sm font-semibold text-text/70">Kaitkan dengan Klien (Opsional)</label>
                   <select
                     value={clientId}
                     onChange={e => setClientId(e.target.value)}
-                    className="h-10 w-full rounded-md border border-input px-3 text-sm focus:outline-none focus:border-primary"
+                    className="h-10 w-full rounded-md border border-input bg-background text-text px-3 text-sm focus:outline-none focus:border-primary"
                   >
                     <option value="">-- Pilih Klien --</option>
                     {clients.map(c => (
@@ -285,11 +285,11 @@ export function CredentialsPage() {
                   </select>
                 </div>
                 <div className="grid gap-2">
-                  <label className="text-sm font-semibold text-slate-600">Kaitkan dengan Proyek (Opsional)</label>
+                  <label className="text-sm font-semibold text-text/70">Kaitkan dengan Proyek (Opsional)</label>
                   <select
                     value={projectId}
                     onChange={e => setProjectId(e.target.value)}
-                    className="h-10 w-full rounded-md border border-input px-3 text-sm focus:outline-none focus:border-primary"
+                    className="h-10 w-full rounded-md border border-input bg-background text-text px-3 text-sm focus:outline-none focus:border-primary"
                   >
                     <option value="">-- Pilih Proyek --</option>
                     {projects.map(p => {
@@ -303,40 +303,40 @@ export function CredentialsPage() {
               </div>
 
               <div className="grid gap-2">
-                <label className="text-sm font-semibold">Alamat Domain / URL Login</label>
+                <label className="text-sm font-semibold text-text">Alamat Domain / URL Login</label>
                 <input
                   value={url}
                   onChange={e => setUrl(e.target.value)}
-                  className="h-10 w-full rounded-md border border-input px-3 text-sm focus:outline-none focus:border-primary"
+                  className="h-10 w-full rounded-md border border-input bg-background text-text px-3 text-sm focus:outline-none focus:border-primary"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <label className="text-sm font-semibold">Username / Email</label>
+                  <label className="text-sm font-semibold text-text">Username / Email</label>
                   <input
                     value={username}
                     onChange={e => setUsername(e.target.value)}
-                    className="h-10 w-full rounded-md border border-input px-3 text-sm focus:outline-none focus:border-primary"
+                    className="h-10 w-full rounded-md border border-input bg-background text-text px-3 text-sm focus:outline-none focus:border-primary"
                   />
                 </div>
                 <div className="grid gap-2">
-                  <label className="text-sm font-semibold">Password / PIN</label>
+                  <label className="text-sm font-semibold text-text">Password / PIN</label>
                   <input
                     type="text"
                     value={password}
                     onChange={e => setPassword(e.target.value)}
-                    className="h-10 w-full rounded-md border border-input px-3 text-sm focus:outline-none focus:border-primary font-mono"
+                    className="h-10 w-full rounded-md border border-input bg-background text-text px-3 text-sm focus:outline-none focus:border-primary font-mono"
                   />
                 </div>
               </div>
 
               <div className="grid gap-2">
-                <label className="text-sm font-semibold">Catatan Khusus</label>
+                <label className="text-sm font-semibold text-text">Catatan Khusus</label>
                 <textarea
                   value={notes}
                   onChange={e => setNotes(e.target.value)}
-                  className="h-20 w-full rounded-md border border-input px-3 py-2 text-sm focus:outline-none focus:border-primary resize-none"
+                  className="h-20 w-full rounded-md border border-input bg-background text-text px-3 py-2 text-sm focus:outline-none focus:border-primary resize-none"
                 />
               </div>
             </div>

@@ -525,9 +525,9 @@ export function ProjectsPage() {
                       onChange={(e) => setFormData({ ...formData, clientId: e.target.value })}
                       className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm outline-none focus:border-primary transition-colors"
                     >
-                      <option value="" className="text-slate-900 bg-white">-- Pilih Klien --</option>
+                      <option value="" className="text-text bg-background">-- Pilih Klien --</option>
                       {clients.map(c => (
-                        <option key={c.id} value={c.id} className="text-slate-900 bg-white">{c.cells.name} {c.cells.phone ? `(${c.cells.phone})` : ""}</option>
+                        <option key={c.id} value={c.id} className="text-text bg-background">{c.cells.name} {c.cells.phone ? `(${c.cells.phone})` : ""}</option>
                       ))}
                     </select>
                   </div>

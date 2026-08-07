@@ -317,14 +317,14 @@ export function PaymentPage() {
                         setSelectedProjectId(e.target.value);
                         setSuccessMsg("");
                       }}
-                      className="h-11 w-full rounded-md border border-input bg-transparent px-3 text-base outline-none focus:border-primary transition-colors"
+                      className="h-11 w-full rounded-md border border-input bg-background text-text px-3 text-base outline-none focus:border-primary transition-colors"
                       required={paymentType !== "expense"}
                     >
-                      <option value="" className="text-slate-900 bg-white">-- Pilih Proyek --</option>
+                      <option value="" className="text-text bg-background">-- Pilih Proyek --</option>
                       {projects.map((proj) => {
                         if (proj.status === "cancel" || proj.status === "canceled_by_skyflow") return null;
                         return (
-                          <option key={proj.id} value={proj.id} className="text-slate-900 bg-white">
+                          <option key={proj.id} value={proj.id} className="text-text bg-background">
                             {proj.name} ({proj.client?.name || 'Klien tidak diketahui'})
                           </option>
                         );
@@ -337,12 +337,12 @@ export function PaymentPage() {
                     <select
                       value={paymentType}
                       onChange={(e) => setPaymentType(e.target.value as any)}
-                      className="h-11 w-full rounded-md border border-input bg-transparent px-3 text-base outline-none focus:border-primary transition-colors"
+                      className="h-11 w-full rounded-md border border-input bg-background text-text px-3 text-base outline-none focus:border-primary transition-colors"
                       required
                     >
-                      <option value="project" className="text-slate-900 bg-white">Pelunasan Proyek Utama</option>
-                      <option value="maintenance" className="text-slate-900 bg-white">Maintenance Bulanan</option>
-                      <option value="expense" className="text-slate-900 bg-white">Uang Keluar</option>
+                      <option value="project" className="text-text bg-background">Pelunasan Proyek Utama</option>
+                      <option value="maintenance" className="text-text bg-background">Maintenance Bulanan</option>
+                      <option value="expense" className="text-text bg-background">Uang Keluar</option>
                     </select>
                   </div>
 
