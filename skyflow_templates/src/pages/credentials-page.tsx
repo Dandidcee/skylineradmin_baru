@@ -189,7 +189,7 @@ export function CredentialsPage() {
                       </CardTitle>
                       <CardDescription className="mt-1">
                         {(cred.client?.name || cred.project?.name) ? (
-                          <span className="font-medium text-white/70">
+                          <span className="font-medium text-muted-foreground">
                             {cred.client?.name} {cred.project?.name && ` - ${cred.project.name}`}
                           </span>
                         ) : "Kredensial Umum"}
@@ -207,33 +207,33 @@ export function CredentialsPage() {
                 </CardHeader>
                 <CardContent className="flex flex-col gap-3 text-sm">
                   {cred.url && (
-                    <div className="flex items-center gap-2 bg-white/5 p-2 rounded-md border border-white/10">
-                      <Globe className="h-4 w-4 text-white/50 shrink-0" />
-                      <span className="flex-1 truncate font-medium text-white/90">{cred.url}</span>
-                      <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0 text-white/50 hover:text-white" onClick={() => handleCopy(cred.url)}>
+                    <div className="flex items-center gap-2 bg-muted p-2 rounded-md border border-border">
+                      <Globe className="h-4 w-4 text-muted-foreground shrink-0" />
+                      <span className="flex-1 truncate font-medium text-foreground">{cred.url}</span>
+                      <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0 text-muted-foreground hover:text-foreground" onClick={() => handleCopy(cred.url)}>
                         <Copy className="h-3 w-3" />
                       </Button>
                     </div>
                   )}
                   {cred.username && (
-                    <div className="flex items-center gap-2 bg-white/5 p-2 rounded-md border border-white/10">
-                      <User className="h-4 w-4 text-white/50 shrink-0" />
-                      <span className="flex-1 truncate text-white/90">{cred.username}</span>
-                      <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0 text-white/50 hover:text-white" onClick={() => handleCopy(cred.username)}>
+                    <div className="flex items-center gap-2 bg-muted p-2 rounded-md border border-border">
+                      <User className="h-4 w-4 text-muted-foreground shrink-0" />
+                      <span className="flex-1 truncate text-foreground">{cred.username}</span>
+                      <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0 text-muted-foreground hover:text-foreground" onClick={() => handleCopy(cred.username)}>
                         <Copy className="h-3 w-3" />
                       </Button>
                     </div>
                   )}
                   {cred.password && (
-                    <div className="flex items-center gap-2 bg-white/5 p-2 rounded-md border border-white/10">
-                      <Key className="h-4 w-4 text-white/50 shrink-0" />
-                      <span className="flex-1 truncate font-mono text-white/90">
+                    <div className="flex items-center gap-2 bg-muted p-2 rounded-md border border-border">
+                      <Key className="h-4 w-4 text-muted-foreground shrink-0" />
+                      <span className="flex-1 truncate font-mono text-foreground">
                         {showPassword[cred.id] ? cred.password : '••••••••••••'}
                       </span>
-                      <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0 text-white/50 hover:text-white" onClick={() => togglePassword(cred.id)}>
+                      <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0 text-muted-foreground hover:text-foreground" onClick={() => togglePassword(cred.id)}>
                         {showPassword[cred.id] ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0 text-white/50 hover:text-white" onClick={() => handleCopy(cred.password)}>
+                      <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0 text-muted-foreground hover:text-foreground" onClick={() => handleCopy(cred.password)}>
                         <Copy className="h-3 w-3" />
                       </Button>
                     </div>
