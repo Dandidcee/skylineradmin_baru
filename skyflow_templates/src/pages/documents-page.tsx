@@ -99,22 +99,31 @@ export function DocumentsPage() {
     return groups;
   }, [documents]);
 
-  const handleDownload = (doc: any) => {
-    if (!doc.fileUrl) return;
+  const handleDownload = async (doc: any) => {
     try {
-      if (doc.fileUrl.startsWith('data:text/html')) {
+      toast.loading("Mengambil file dokumen...", { id: `dl-${doc.id}` });
+      const fileData = await import("@/services/document-service").then(m => m.getDocumentFile(doc.id));
+      const fileUrl = fileData.fileUrl;
+      if (!fileUrl) {
+        toast.error("File tidak ditemukan", { id: `dl-${doc.id}` });
+        return;
+      }
+      
+      toast.success("File berhasil dibuka", { id: `dl-${doc.id}` });
+      
+      if (fileUrl.startsWith('data:text/html')) {
         const win = window.open('', '_blank');
         if (win) {
-          const base64Data = doc.fileUrl.split(',')[1];
-          // use decodeURIComponent(escape(atob())) to handle unicode characters properly
+          const base64Data = fileUrl.split(',')[1];
           win.document.write(decodeURIComponent(escape(atob(base64Data))));
           win.document.close();
         }
       } else {
-        window.open(doc.fileUrl, '_blank');
+        window.open(fileUrl, '_blank');
       }
     } catch (e) {
       console.error("Failed to open document:", e);
+      toast.error("Gagal membuka dokumen", { id: `dl-${doc.id}` });
     }
   };
 
@@ -375,7 +384,7 @@ export function DocumentsPage() {
                       variant="ghost"
                       size="icon"
                       aria-label="Unduh"
-                      disabled={doc.status !== "ready" || !doc.fileUrl}
+                      disabled={doc.status !== "ready"}
                       className="h-8 w-8 text-text/50 hover:text-text"
                       onClick={() => handleDownload(doc)}
                     >
@@ -399,7 +408,7 @@ export function DocumentsPage() {
                           <Share2 className="h-4 w-4 mr-2" />
                           Bagikan Tautan Publik
                         </DropdownMenuItem>
-                        <DropdownMenuItem disabled={doc.status !== "ready" || !doc.fileUrl} onClick={() => handleDownload(doc)}>
+                        <DropdownMenuItem disabled={doc.status !== "ready"} onClick={() => handleDownload(doc)}>
                           <Download className="h-4 w-4 mr-2" />
                           Unduh
                         </DropdownMenuItem>

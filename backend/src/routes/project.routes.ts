@@ -10,7 +10,16 @@ router.use(authenticateToken);
 router.get('/', async (req, res) => {
   try {
     const projects = await prisma.project.findMany({ 
-      include: { client: true, documents: true, tasks: true, finances: true, revisions: { orderBy: { createdAt: 'asc' } }, maintenanceCosts: { orderBy: { createdAt: 'asc' } } },
+      include: { 
+        client: true, 
+        documents: {
+          omit: { fileUrl: true, clientSignature: true }
+        }, 
+        tasks: true, 
+        finances: true, 
+        revisions: { orderBy: { createdAt: 'asc' } }, 
+        maintenanceCosts: { orderBy: { createdAt: 'asc' } } 
+      },
       orderBy: { createdAt: 'desc' } 
     });
     res.json(projects);

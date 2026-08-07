@@ -7,10 +7,25 @@ router.use(authenticateToken);
 
 router.get('/', async (req, res) => {
   const docs = await prisma.document.findMany({ 
+    omit: { fileUrl: true, clientSignature: true },
     include: { client: true, project: true, creator: true },
     orderBy: { createdAt: 'desc' } 
   });
   res.json(docs);
+});
+
+router.get('/:id/file', async (req, res) => {
+  const id = req.params.id as string;
+  try {
+    const doc = await prisma.document.findUnique({
+      where: { id },
+      select: { fileUrl: true, clientSignature: true }
+    });
+    if (!doc) return res.status(404).json({ error: 'Document not found' });
+    res.json(doc);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch document file' });
+  }
 });
 
 router.post('/', async (req, res) => {

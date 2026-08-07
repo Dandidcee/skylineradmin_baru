@@ -13,6 +13,10 @@ export async function listDocuments(): Promise<DocumentItem[]> {
   }
 }
 
+export async function getDocumentFile(id: string): Promise<{ fileUrl: string, clientSignature?: string }> {
+  return await fetchApi(`/documents/${id}/file`);
+}
+
 export async function getDashboardStats(): Promise<DashboardStats> {
   try {
     return await fetchApi('/stats');
