@@ -47,7 +47,7 @@ router.get('/', authenticateToken, async (req, res) => {
 // DELETE /api/feedback/:id (Protected route for admin to delete feedback)
 router.delete('/:id', authenticateToken, async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     await prisma.customerFeedback.delete({
       where: { id },
     });

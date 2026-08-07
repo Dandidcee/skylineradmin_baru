@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { feedbackService, CustomerFeedback } from "@/services/feedback-service";
+import { feedbackService } from "@/services/feedback-service";
+import type { CustomerFeedback } from "@/services/feedback-service";
 import { Star, MessageSquareQuote, Loader2, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";

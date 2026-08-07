@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { feedbackService, CustomerFeedback } from "@/services/feedback-service";
+import { feedbackService } from "@/services/feedback-service";
+import type { CustomerFeedback } from "@/services/feedback-service";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
