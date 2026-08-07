@@ -49,7 +49,7 @@ export function LoginPage() {
       localStorage.setItem('user', JSON.stringify(userToStore));
       toastManager.success({ title: "Login berhasil", description: "Mengalihkan ke dashboard..." });
       setTimeout(() => {
-        window.location.href = "/";
+        window.location.href = "/dashboard";
       }, 500);
     } catch (err: any) {
       toastManager.error({ title: "Gagal Login", description: err.message || "Terjadi kesalahan" });

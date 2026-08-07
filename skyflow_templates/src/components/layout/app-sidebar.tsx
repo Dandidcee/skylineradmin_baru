@@ -66,7 +66,7 @@ import {
 } from "@/components/ui/sidebar";
 
 const NAV_ITEMS = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard, end: true },
+  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, end: true },
   { to: "/clients", label: "List Client", icon: Users, end: false },
   { to: "/projects", label: "Projects", icon: LayoutDashboard, end: false },
   { to: "/solo-projects", label: "Project Solo", icon: Briefcase, end: false },

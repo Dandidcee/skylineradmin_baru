@@ -31,8 +31,9 @@ const FormResponsesPage = lazyNamed(import("@/pages/form-responses-page"), "Form
 const PublicFeedbackPage = lazyNamed(import("@/pages/public-feedback-page"), "PublicFeedbackPage");
 const PublicTestimoniesPage = lazyNamed(import("@/pages/public-testimonies-page"), "PublicTestimoniesPage");
 const FeedbackManagePage = lazyNamed(import("@/pages/feedback-manage-page"), "FeedbackManagePage");
-// Halaman publik (login & shared document) tidak butuh data store
-const PUBLIC_PATHS = ["/login", "/shared-document", "/form", "/feedback", "/testimonies"];
+const LandingPage = lazyNamed(import("@/pages/landing-page"), "LandingPage");
+// Halaman publik (login & shared document & landing page) tidak butuh data store
+const PUBLIC_PATHS = ["/login", "/shared-document", "/form", "/feedback", "/testimonies", "/"];
 
 /**
  * Provider wrapper yang hanya aktif saat user sudah login.
@@ -40,7 +41,7 @@ const PUBLIC_PATHS = ["/login", "/shared-document", "/form", "/feedback", "/test
  */
 function AuthProviders({ children }: { children: React.ReactNode }) {
   const { pathname } = useLocation();
-  const isPublic = PUBLIC_PATHS.some(p => pathname.startsWith(p));
+  const isPublic = PUBLIC_PATHS.some(p => p === "/" ? pathname === "/" : pathname.startsWith(p));
 
   // Hanya skip provider di halaman publik seperti login & shared-document.
   // Jangan skip berdasarkan token, biar API service (yang meredirect 401) yang meng-handle jika belum login.
@@ -87,6 +88,7 @@ export default function App() {
         }>
           <Routes>
             {/* Public Routes */}
+            <Route path="/"                    element={<LandingPage />} />
             <Route path="/login"               element={<LoginPage />} />
             <Route path="/shared-document/:id" element={<SharedDocumentPage />} />
             <Route path="/form"                element={<PublicFormPage />} />
@@ -94,7 +96,7 @@ export default function App() {
             <Route path="/testimonies"         element={<PublicTestimoniesPage />} />
 
             {/* Protected Routes */}
-            <Route path="/"                    element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+            <Route path="/dashboard"           element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
             <Route path="/documents"           element={<ProtectedRoute><DocumentsPage /></ProtectedRoute>} />
             <Route path="/templates"           element={<ProtectedRoute><TemplatesPage /></ProtectedRoute>} />
             <Route path="/clients"             element={<ProtectedRoute><ClientsPage /></ProtectedRoute>} />
