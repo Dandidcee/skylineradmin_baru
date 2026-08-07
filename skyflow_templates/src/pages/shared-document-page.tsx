@@ -87,10 +87,10 @@ export function SharedDocumentPage() {
             // Disable all contenteditable elements to prevent client edits
             decoded = decoded.replace(/contenteditable(="[^"]*")?/gi, 'contenteditable="false"');
             
-            // Fix legacy documents that are missing <base> tag
-            if (!decoded.includes('<base href=')) {
-               decoded = decoded.replace('</head>', `<base href="${window.location.origin}"></head>`);
-            }
+            // Selalu hapus base tag bawaan (kalau ada dari environment sebelumnya)
+            decoded = decoded.replace(/<base href="[^"]*">/gi, '');
+            // Dan selalu suntik base tag yang sesuai dengan origin SAAT INI
+            decoded = decoded.replace('</head>', `<base href="${window.location.origin}"></head>`);
             
             setHtmlContent(decoded);
           } catch (e) {
