@@ -1,5 +1,6 @@
 import type { DashboardStats, DocumentItem } from "./types";
 import { fetchApi } from "./api";
+import templateCssRaw from "../components/documents/templates/template.css?raw";
 
 /**
  * DOCUMENT SERVICE — semua akses data dokumen terpusat di sini.
@@ -87,7 +88,12 @@ export function createDocumentSnapshot(title: string): { fileUrl: string, sizeKb
       text.includes('editable-inline') ||
       text.includes('@font-face')
     ) {
-      headStyles += tag.outerHTML + '\n';
+      let tagHtml = tag.outerHTML;
+      // Hapus crossorigin agar tidak kena blokir CORS saat jalan di iframe srcDoc
+      if (tag.tagName.toLowerCase() === 'link') {
+        tagHtml = tagHtml.replace(/crossorigin(="[^"]*")?/gi, '');
+      }
+      headStyles += tagHtml + '\n';
     }
   });
   
@@ -131,6 +137,9 @@ export function createDocumentSnapshot(title: string): { fileUrl: string, sizeKb
         <title>${title}</title>
         <base href="${window.location.origin}">
         ${headStyles}
+        <style>
+          ${templateCssRaw}
+        </style>
         <style>
           :root, html, body {
             --text: #100a04 !important;
